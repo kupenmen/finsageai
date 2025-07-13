@@ -1,245 +1,46 @@
 <!DOCTYPE html>
-
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แพลตฟอร์มผู้ช่วยการเงิน AI ส่วนบุคคล</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* CSS ทั้งหมดของคุณยังคงเหมือนเดิม ไม่มีการเปลี่ยนแปลง */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Sarabun', Arial, sans-serif; line-height: 1.6; color: #333; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; color: white; margin-bottom: 30px; padding: 40px 0; }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header p { font-size: 1.2em; opacity: 0.9; }
+        .form-container { background: white; border-radius: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); padding: 30px; margin-bottom: 30px; }
+        .form-section { margin-bottom: 40px; padding: 20px; border-left: 4px solid #667eea; background: #f8f9ff; border-radius: 0 8px 8px 0; }
+        .form-section h2 { color: #667eea; margin-bottom: 20px; font-size: 1.5em; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; transition: all 0.3s ease; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        .help-text { font-size: 0.9em; color: #666; margin-top: 5px; font-style: italic; }
+        .btn { background: linear-gradient(45deg, #667eea, #764ba2); color: white; padding: 15px 30px; border: none; border-radius: 8px; font-size: 1.1em; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+        .btn-add { background: linear-gradient(45deg, #28a745, #20c997); padding: 10px 20px; font-size: 0.9em; margin-top: 10px; display: inline-block; }
+        .dynamic-section { border: 2px dashed #ddd; padding: 20px; margin: 20px 0; border-radius: 8px; background: #fafafa; }
+        .dynamic-item { background: white; padding: 15px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: relative; }
+        .remove-btn { position: absolute; top: 10px; right: 10px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-size: 16px; line-height: 30px; text-align: center; }
+        .submit-section { text-align: center; margin-top: 40px; padding: 30px; background: linear-gradient(135deg, #f8f9ff, #e8f0fe); border-radius: 15px; }
+        .loading { display: none; text-align: center; padding: 20px; }
+        .loading.show { display: block; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .success-message { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; border-radius: 8px; margin: 20px 0; display: none; }
+        .error-message { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; border-radius: 8px; margin: 20px 0; display: none; }
+        @media (max-width: 768px) {
+            .form-row, .form-row-3 { grid-template-columns: 1fr; }
+            .header h1 { font-size: 2em; }
+            .container { padding: 10px; }
         }
-
-    body {
-        font-family: 'Sarabun', Arial, sans-serif;
-        line-height: 1.6;
-        color: #333;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-    }
-
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-    }
-
-    .header {
-        text-align: center;
-        color: white;
-        margin-bottom: 30px;
-        padding: 40px 0;
-    }
-
-    .header h1 {
-        font-size: 2.5em;
-        margin-bottom: 10px;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
-
-    .header p {
-        font-size: 1.2em;
-        opacity: 0.9;
-    }
-
-    .form-container {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        padding: 30px;
-        margin-bottom: 30px;
-    }
-
-    .form-section {
-        margin-bottom: 40px;
-        padding: 20px;
-        border-left: 4px solid #667eea;
-        background: #f8f9ff;
-        border-radius: 0 8px 8px 0;
-    }
-
-    .form-section h2 {
-        color: #667eea;
-        margin-bottom: 20px;
-        font-size: 1.5em;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-        color: #555;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-        width: 100%;
-        padding: 12px;
-        border: 2px solid #ddd;
-        border-radius: 8px;
-        font-size: 16px;
-        transition: all 0.3s ease;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
-
-    .form-row-3 {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 15px;
-    }
-
-    .help-text {
-        font-size: 0.9em;
-        color: #666;
-        margin-top: 5px;
-        font-style: italic;
-    }
-
-    .btn {
-        background: linear-gradient(45deg, #667eea, #764ba2);
-        color: white;
-        padding: 15px 30px;
-        border: none;
-        border-radius: 8px;
-        font-size: 1.1em;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
-
-    .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-    }
-
-    .btn-add {
-        background: linear-gradient(45deg, #28a745, #20c997);
-        padding: 10px 20px;
-        font-size: 0.9em;
-        margin-top: 10px;
-        display: inline-block;
-    }
-
-    .dynamic-section {
-        border: 2px dashed #ddd;
-        padding: 20px;
-        margin: 20px 0;
-        border-radius: 8px;
-        background: #fafafa;
-    }
-
-    .dynamic-item {
-        background: white;
-        padding: 15px;
-        margin-bottom: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        position: relative;
-    }
-
-    .remove-btn {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background: #dc3545;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-        cursor: pointer;
-        font-size: 16px;
-    }
-
-    .submit-section {
-        text-align: center;
-        margin-top: 40px;
-        padding: 30px;
-        background: linear-gradient(135deg, #f8f9ff, #e8f0fe);
-        border-radius: 15px;
-    }
-
-    .loading {
-        display: none;
-        text-align: center;
-        padding: 20px;
-    }
-
-    .loading.show {
-        display: block;
-    }
-
-    .spinner {
-        border: 4px solid #f3f3f3;
-        border-top: 4px solid #667eea;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        animation: spin 1s linear infinite;
-        margin: 0 auto 10px;
-    }
-
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-    .success-message {
-        background: #d4edda;
-        border: 1px solid #c3e6cb;
-        color: #155724;
-        padding: 15px;
-        border-radius: 8px;
-        margin: 20px 0;
-        display: none;
-    }
-
-    .error-message {
-        background: #f8d7da;
-        border: 1px solid #f5c6cb;
-        color: #721c24;
-        padding: 15px;
-        border-radius: 8px;
-        margin: 20px 0;
-        display: none;
-    }
-
-    @media (max-width: 768px) {
-        .form-row,
-        .form-row-3 {
-            grid-template-columns: 1fr;
-        }
-        
-        .header h1 {
-            font-size: 2em;
-        }
-        
-        .container {
-            padding: 10px;
-        }
-    }
-</style>
-
+    </style>
 </head>
 <body>
     <div class="container">
@@ -248,481 +49,351 @@
             <p>วิเคราะห์สถานะการเงิน วางแผนภาษี และจัดการหนี้สิน ด้วยปัญญาประดิษฐ์</p>
         </div>
 
-    <div class="form-container">
-    <form id="finsageDataForm">
-            <!-- ข้อมูลส่วนตัว -->
-            <div class="form-section">
-                <h2>📱 ข้อมูลส่วนตัว</h2>
+        <div class="form-container">
+            <form id="finsageDataForm">
+                <div class="form-section">
+                    <h2>📱 ข้อมูลส่วนตัว</h2>
+                    <div class="form-group">
+                        <label for="telegram_id">Telegram ID *</label>
+                        <input type="text" id="telegram_id" name="telegram_id" required>
+                        <div class="help-text">วิธีหา Telegram ID: ไปที่ @userinfobot และส่งข้อความใดๆ จะได้รับ ID ของคุณ</div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2>💰 ข้อมูลรายรับ</h2>
+                    <div id="incomeSection" class="dynamic-section">
+                        <h3>เพิ่มรายการรายรับ</h3>
+                        <div id="incomeList"></div>
+                        <button type="button" class="btn btn-add" onclick="addIncome()">+ เพิ่มรายรับ</button>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2>💳 ข้อมูลรายจ่าย</h2>
+                    <div id="expenseSection" class="dynamic-section">
+                        <h3>เพิ่มรายการรายจ่าย</h3>
+                        <div id="expenseList"></div>
+                        <button type="button" class="btn btn-add" onclick="addExpense()">+ เพิ่มรายจ่าย</button>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2>📱 ค่าบริการรายเดือน (Subscription)</h2>
+                    <div id="subscriptionSection" class="dynamic-section">
+                        <h3>เพิ่มค่าบริการรายเดือน</h3>
+                        <div id="subscriptionList"></div>
+                        <button type="button" class="btn btn-add" onclick="addSubscription()">+ เพิ่มค่าบริการ</button>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2>💳 ข้อมูลหนี้สิน</h2>
+                    <div id="debtSection" class="dynamic-section">
+                        <h3>เพิ่มข้อมูลหนี้สิน</h3>
+                        <div id="debtList"></div>
+                        <button type="button" class="btn btn-add" onclick="addDebt()">+ เพิ่มหนี้สิน</button>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2>📊 ข้อมูลสำหรับคำนวณภาษี</h2>
+                    <div class="form-group">
+                        <label for="annual_income_type">ประเภทรายได้พึงประเมิน</label>
+                        <select id="annual_income_type" name="annual_income_type">
+                            <option value="">เลือกประเภทรายได้</option>
+                            <option value="40(1)">40(1) - เงินเดือน ค่าจ้าง</option>
+                            <option value="40(2)">40(2) - รายได้จากการประกอบอาชีพอิสระ</option>
+                            <option value="40(3)">40(3) - รายได้จากการประกอบธุรกิจ</option>
+                            <option value="40(4)">40(4) - รายได้จากการลงทุน</option>
+                            <option value="40(5)">40(5) - รายได้จากการให้เช่าทรัพย์สิน</option>
+                            <option value="40(6)">40(6) - รายได้จากวิชาชีพอิสระ</option>
+                            <option value="40(7)">40(7) - รายได้จากค่าลิขสิทธิ์</option>
+                            <option value="40(8)">40(8) - รายได้อื่นๆ</option>
+                        </select>
+                    </div>
+                    
+                    <h3>ค่าลดหย่อนภาษี</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="deductible_personal">ค่าลดหย่อนส่วนตัว (บาท)</label>
+                            <input type="number" id="deductible_personal" name="deductible_personal" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="deductible_spouse">ค่าลดหย่อนคู่สมรส (บาท)</label>
+                            <input type="number" id="deductible_spouse" name="deductible_spouse" placeholder="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="deductible_child">ค่าลดหย่อนบุตร (บาท)</label>
+                            <input type="number" id="deductible_child" name="deductible_child" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="deductible_insurance">ค่าลดหย่อนประกันชีวิต (บาท)</label>
+                            <input type="number" id="deductible_insurance" name="deductible_insurance" placeholder="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="deductible_investment">ค่าลดหย่อนการลงทุน (บาท)</label>
+                            <input type="number" id="deductible_investment" name="deductible_investment" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="deductible_donation">ค่าลดหย่อนการบริจาค (บาท)</label>
+                            <input type="number" id="deductible_donation" name="deductible_donation" placeholder="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="submit-section">
+                    <button type="submit" class="btn">📊 วิเคราะห์ข้อมูลการเงิน</button>
+                    <div class="loading" id="loading">
+                        <div class="spinner"></div>
+                        <p>กำลังวิเคราะห์ข้อมูลของคุณ...</p>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            ✅ ส่งข้อมูลสำเร็จ! ระบบจะส่งผลการวิเคราะห์ไปยัง Telegram ของคุณในอีกสักครู่
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            </div>
+    </div>
+
+    <script>
+        let incomeCounter = 0;
+        let expenseCounter = 0;
+        let subscriptionCounter = 0;
+        let debtCounter = 0;
+
+        function addIncome() {
+            incomeCounter++;
+            const incomeList = document.getElementById('incomeList');
+            const incomeItem = document.createElement('div');
+            incomeItem.className = 'dynamic-item';
+            incomeItem.innerHTML = `
+                <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label>วันที่</label>
+                        <input type="date" name="income_date_${incomeCounter}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>รายละเอียด</label>
+                        <input type="text" name="income_description_${incomeCounter}" placeholder="เช่น เงินเดือน, โบนัส" required>
+                    </div>
+                    <div class="form-group">
+                        <label>จำนวนเงิน (บาท)</label>
+                        <input type="number" name="income_amount_${incomeCounter}" min="0" step="0.01" required>
+                    </div>
+                </div>
+            `;
+            incomeList.appendChild(incomeItem);
+        }
+
+        function addExpense() {
+            expenseCounter++;
+            const expenseList = document.getElementById('expenseList');
+            const expenseItem = document.createElement('div');
+            expenseItem.className = 'dynamic-item';
+            expenseItem.innerHTML = `
+                <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label>วันที่</label>
+                        <input type="date" name="expense_date_${expenseCounter}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>รายละเอียด</label>
+                        <input type="text" name="expense_description_${expenseCounter}" placeholder="เช่น ค่าอาหาร, ค่าน้ำมัน" required>
+                    </div>
+                    <div class="form-group">
+                        <label>จำนวนเงิน (บาท)</label>
+                        <input type="number" name="expense_amount_${expenseCounter}" min="0" step="0.01" required>
+                    </div>
+                </div>
                 <div class="form-group">
-                    <label for="telegram_id">Telegram ID *</label>
-                    <input type="text" id="telegram_id" name="telegram_id" required>
-                    <div class="help-text">วิธีหา Telegram ID: ไปที่ @userinfobot และส่งข้อความใดๆ จะได้รับ ID ของคุณ</div>
-                </div>
-            </div>
-
-            <!-- ข้อมูลรายรับ -->
-            <div class="form-section">
-                <h2>💰 ข้อมูลรายรับ</h2>
-                <div id="incomeSection" class="dynamic-section">
-                    <h3>เพิ่มรายการรายรับ</h3>
-                    <div id="incomeList"></div>
-                    <button type="button" class="btn btn-add" onclick="addIncome()">+ เพิ่มรายรับ</button>
-                </div>
-            </div>
-
-            <!-- ข้อมูลรายจ่าย -->
-            <div class="form-section">
-                <h2>💳 ข้อมูลรายจ่าย</h2>
-                <div id="expenseSection" class="dynamic-section">
-                    <h3>เพิ่มรายการรายจ่าย</h3>
-                    <div id="expenseList"></div>
-                    <button type="button" class="btn btn-add" onclick="addExpense()">+ เพิ่มรายจ่าย</button>
-                </div>
-            </div>
-
-            <!-- ข้อมูลค่าบริการรายเดือน -->
-            <div class="form-section">
-                <h2>📱 ค่าบริการรายเดือน (Subscription)</h2>
-                <div id="subscriptionSection" class="dynamic-section">
-                    <h3>เพิ่มค่าบริการรายเดือน</h3>
-                    <div id="subscriptionList"></div>
-                    <button type="button" class="btn btn-add" onclick="addSubscription()">+ เพิ่มค่าบริการ</button>
-                </div>
-            </div>
-
-            <!-- ข้อมูลหนี้สิน -->
-            <div class="form-section">
-                <h2>💳 ข้อมูลหนี้สิน</h2>
-                <div id="debtSection" class="dynamic-section">
-                    <h3>เพิ่มข้อมูลหนี้สิน</h3>
-                    <div id="debtList"></div>
-                    <button type="button" class="btn btn-add" onclick="addDebt()">+ เพิ่มหนี้สิน</button>
-                </div>
-            </div>
-
-            <!-- ข้อมูลสำหรับคำนวณภาษี -->
-            <div class="form-section">
-                <h2>📊 ข้อมูลสำหรับคำนวณภาษี</h2>
-                <div class="form-group">
-                    <label for="annual_income_type">ประเภทรายได้พึงประเมิน</label>
-                    <select id="annual_income_type" name="annual_income_type">
-                        <option value="">เลือกประเภทรายได้</option>
-                        <option value="40(1)">40(1) - เงินเดือน ค่าจ้าง</option>
-                        <option value="40(2)">40(2) - รายได้จากการประกอบอาชีพอิสระ</option>
-                        <option value="40(3)">40(3) - รายได้จากการประกอบธุรกิจ</option>
-                        <option value="40(4)">40(4) - รายได้จากการลงทุน</option>
-                        <option value="40(5)">40(5) - รายได้จากการให้เช่าทรัพย์สิน</option>
-                        <option value="40(6)">40(6) - รายได้จากวิชาชีพอิสระ</option>
-                        <option value="40(7)">40(7) - รายได้จากค่าลิขสิทธิ์</option>
-                        <option value="40(8)">40(8) - รายได้อื่นๆ</option>
+                    <label>ประเภทรายจ่าย</label>
+                    <select name="expense_type_${expenseCounter}" required>
+                        <option value="">เลือกประเภท</option>
+                        <option value="รายจ่ายจำเป็น">รายจ่ายจำเป็น</option>
+                        <option value="รายจ่ายฟุ่มเฟือย">รายจ่ายฟุ่มเฟือย</option>
                     </select>
                 </div>
-                
-                <h3>ค่าลดหย่อนภาษี</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="deductible_personal">ค่าลดหย่อนส่วนตัว (บาท)</label>
-                        <input type="number" id="deductible_personal" name="deductible_personal" placeholder="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="deductible_spouse">ค่าลดหย่อนคู่สมรส (บาท)</label>
-                        <input type="number" id="deductible_spouse" name="deductible_spouse" placeholder="0">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="deductible_child">ค่าลดหย่อนบุตร (บาท)</label>
-                        <input type="number" id="deductible_child" name="deductible_child" placeholder="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="deductible_insurance">ค่าลดหย่อนประกันชีวิต (บาท)</label>
-                        <input type="number" id="deductible_insurance" name="deductible_insurance" placeholder="0">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="deductible_investment">ค่าลดหย่อนการลงทุน (บาท)</label>
-                        <input type="number" id="deductible_investment" name="deductible_investment" placeholder="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="deductible_donation">ค่าลดหย่อนการบริจาค (บาท)</label>
-                        <input type="number" id="deductible_donation" name="deductible_donation" placeholder="0">
-                    </div>
-                </div>
-            </div>
-
-            <div class="submit-section">
-                <button type="submit" class="btn">📊 วิเคราะห์ข้อมูลการเงิน</button>
-                <div class="loading" id="loading">
-                    <div class="spinner"></div>
-                    <p>กำลังวิเคราะห์ข้อมูลของคุณ...</p>
-                </div>
-            </div>
-        </form>
-    </div>
-
-    <div class="success-message" id="successMessage">
-        ✅ ส่งข้อมูลสำเร็จ! ระบบจะส่งผลการวิเคราะห์ไปยัง Telegram ของคุณในอีกสักครู่
-    </div>
-
-    <div class="error-message" id="errorMessage">
-        ❌ เกิดข้อผิดพลาด! กรุณาลองใหม่อีกครั้ง
-        <form id="finsageDataForm">
-    <h2>บันทึกข้อมูล Finsage_data (ชีต 1)</h2>
-
-    <label for="telegramId">Telegram ID:</label><br>
-    <input type="text" id="telegramId" name="Telegram_ID" required placeholder="เช่น 123456789"><br><br>
-
-    <label for="dateColB">วันที่ (สำหรับข้อมูลทั่วไป/รายรับ):</label><br>
-    <input type="date" id="dateColB" name="Date_Col_B" required><br><br>
-
-    <label for="detailColC">รายละเอียด (สำหรับข้อมูลทั่วไป/รายรับ):</label><br>
-    <input type="text" id="detailColC" name="Detail_Col_C" required placeholder="เช่น เงินเดือน, ขายของ"><br><br>
-
-    <label for="income">รายรับ (บาท):</label><br>
-    <input type="number" id="income" name="Income" step="0.01" required placeholder="เช่น 25000.00"><br><br>
-
-    <label for="dateColE">วันที่ (สำหรับค่าใช้จ่าย/อื่นๆ):</label><br>
-    <input type="date" id="dateColE" name="Date_Col_E"><br><br>
-
-    <label for="detailColF">รายละเอียด (สำหรับค่าใช้จ่าย/อื่นๆ):</label><br>
-    <input type="text" id="detailColF" name="Detail_Col_F" placeholder="เช่น ค่าอาหาร, ค่าเดินทาง"><br><br>
-
-    <label for="amount">จำนวนเงิน (สำหรับค่าใช้จ่าย/อื่นๆ - บาท):</label><br>
-    <input type="number" id="amount" name="Amount" step="0.01" placeholder="เช่น 150.00"><br><br>
-
-    <label for="necessaryDiscretionary">ประเภท (จำเป็น/ไม่จำเป็น):</label><br>
-    <select id="necessaryDiscretionary" name="Necessary_Discretionary">
-        <option value="">เลือกประเภท</option>
-        <option value="Necessary">Necessary</option>
-        <option value="Discretionary">Discretionary</option>
-    </select><br><br>
-
-    <button type="submit">ส่งข้อมูลไป Google Sheet</button>
-</form>
-
-<div id="formResponseMessage" style="margin-top: 20px; font-weight: bold; padding: 10px; border-radius: 5px; background-color: #f0f0f0;">
-    </div>
-</div>
-<script>
-let incomeCounter = 0;
-let expenseCounter = 0;
-let subscriptionCounter = 0;
-let debtCounter = 0;
-
-// เพิ่มรายรับ
-function addIncome() {
-    incomeCounter++;
-    const incomeList = document.getElementById('incomeList');
-    const incomeItem = document.createElement('div');
-    incomeItem.className = 'dynamic-item';
-    incomeItem.innerHTML = `
-        <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
-        <div class="form-row-3">
-            <div class="form-group">
-                <label>วันที่</label>
-                <input type="date" name="income_date_${incomeCounter}" required>
-            </div>
-            <div class="form-group">
-                <label>รายละเอียด</label>
-                <input type="text" name="income_description_${incomeCounter}" placeholder="เช่น เงินเดือน, โบนัส" required>
-            </div>
-            <div class="form-group">
-                <label>จำนวนเงิน (บาท)</label>
-                <input type="number" name="income_amount_${incomeCounter}" min="0" step="0.01" required>
-            </div>
-        </div>
-    `;
-    incomeList.appendChild(incomeItem);
-}
-
-// เพิ่มรายจ่าย
-function addExpense() {
-    expenseCounter++;
-    const expenseList = document.getElementById('expenseList');
-    const expenseItem = document.createElement('div');
-    expenseItem.className = 'dynamic-item';
-    expenseItem.innerHTML = `
-        <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
-        <div class="form-row-3">
-            <div class="form-group">
-                <label>วันที่</label>
-                <input type="date" name="expense_date_${expenseCounter}" required>
-            </div>
-            <div class="form-group">
-                <label>รายละเอียด</label>
-                <input type="text" name="expense_description_${expenseCounter}" placeholder="เช่น ค่าอาหาร, ค่าน้ำมัน" required>
-            </div>
-            <div class="form-group">
-                <label>จำนวนเงิน (บาท)</label>
-                <input type="number" name="expense_amount_${expenseCounter}" min="0" step="0.01" required>
-            </div>
-        </div>
-        <div class="form-group">
-            <label>ประเภทรายจ่าย</label>
-            <select name="expense_type_${expenseCounter}" required>
-                <option value="">เลือกประเภท</option>
-                <option value="รายจ่ายจำเป็น">รายจ่ายจำเป็น</option>
-                <option value="รายจ่ายฟุ่มเฟือย">รายจ่ายฟุ่มเฟือย</option>
-            </select>
-        </div>
-    `;
-   <script>
-let incomeCounter = 0;
-let expenseCounter = 0;
-let subscriptionCounter = 0;
-let debtCounter = 0;
-
-// เพิ่มรายรับ
-function addIncome() {
-    incomeCounter++;
-    const incomeList = document.getElementById('incomeList');
-    const incomeItem = document.createElement('div');
-    incomeItem.className = 'dynamic-item';
-    incomeItem.innerHTML = `
-        <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
-        <div class="form-row-3">
-            <div class="form-group">
-                <label>วันที่</label>
-                <input type="date" name="income_date_${incomeCounter}" required>
-            </div>
-            <div class="form-group">
-                <label>รายละเอียด</label>
-                <input type="text" name="income_description_${incomeCounter}" placeholder="เช่น เงินเดือน, โบนัส" required>
-            </div>
-            <div class="form-group">
-                <label>จำนวนเงิน (บาท)</label>
-                <input type="number" name="income_amount_${incomeCounter}" min="0" step="0.01" required>
-            </div>
-        </div>
-    `;
-    incomeList.appendChild(incomeItem);
-}
-
-// เพิ่มรายจ่าย
-function addExpense() {
-    expenseCounter++;
-    const expenseList = document.getElementById('expenseList');
-    const expenseItem = document.createElement('div');
-    expenseItem.className = 'dynamic-item';
-    expenseItem.innerHTML = `
-        <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
-        <div class="form-row-3">
-            <div class="form-group">
-                <label>วันที่</label>
-                <input type="date" name="expense_date_${expenseCounter}" required>
-            </div>
-            <div class="form-group">
-                <label>รายละเอียด</label>
-                <input type="text" name="expense_description_${expenseCounter}" placeholder="เช่น ค่าอาหาร, ค่าน้ำมัน" required>
-            </div>
-            <div class="form-group">
-                <label>จำนวนเงิน (บาท)</label>
-                <input type="number" name="expense_amount_${expenseCounter}" min="0" step="0.01" required>
-            </div>
-        </div>
-        <div class="form-group">
-            <label>ประเภทรายจ่าย</label>
-            <select name="expense_type_${expenseCounter}" required>
-                <option value="">เลือกประเภท</option>
-                <option value="รายจ่ายจำเป็น">รายจ่ายจำเป็น</option>
-                <option value="รายจ่ายฟุ่มเฟือย">รายจ่ายฟุ่มเฟือย</option>
-            </select>
-        </div>
-    `;
-    expenseList.appendChild(expenseItem);
-}
-
-// เพิ่มค่าบริการรายเดือน
-function addSubscription() {
-    subscriptionCounter++;
-    const list = document.getElementById('subscriptionList');
-    const item = document.createElement('div');
-    item.className = 'dynamic-item';
-    item.innerHTML = `
-        <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
-        <div class="form-row">
-            <div class="form-group">
-                <label>ชื่อบริการ</label>
-                <input type="text" name="subscription_name_${subscriptionCounter}" required>
-            </div>
-            <div class="form-group">
-                <label>ค่าบริการต่อเดือน (บาท)</label>
-                <input type="number" name="subscription_cost_${subscriptionCounter}" min="0" step="0.01" required>
-            </div>
-        </div>
-    `;
-    list.appendChild(item);
-}
-
-// เพิ่มหนี้
-function addDebt() {
-    debtCounter++;
-    const list = document.getElementById('debtList');
-    const item = document.createElement('div');
-    item.className = 'dynamic-item';
-    item.innerHTML = `
-        <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
-        <div class="form-row">
-            <div class="form-group">
-                <label>ชื่อหนี้</label>
-                <input type="text" name="debt_name_${debtCounter}" required>
-            </div>
-            <div class="form-group">
-                <label>ยอดหนี้คงเหลือ (บาท)</label>
-                <input type="number" name="debt_amount_${debtCounter}" min="0" step="0.01" required>
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>อัตราดอกเบี้ยต่อปี (%)</label>
-                <input type="number" name="debt_interest_rate_${debtCounter}" min="0" max="100" step="0.01" required>
-            </div>
-            <div class="form-group">
-                <label>วันครบรอบจ่าย</label>
-                <input type="date" name="debt_due_date_${debtCounter}" required>
-            </div>
-        </div>
-    `;
-    list.appendChild(item);
-}
-
-// ลบรายการ
-function removeItem(button) {
-    button.parentElement.remove();
-}
-
-// Webhook n8n
-const N8N_WEBHOOK_URL = 'https://www222.app.n8n.cloud/webhook-test/c68f863e-4785-4ab4-93d1-a4397ffed2e3';
-const finsageDataForm = document.getElementById('finsageDataForm');
-const formResponseMessage = document.getElementById('formResponseMessage');
-
-if (finsageDataForm) {
-    finsageDataForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        formResponseMessage.textContent = '⏳ กำลังส่งข้อมูล...';
-        formResponseMessage.style.color = 'blue';
-
-        try {
-            const formData = new FormData(finsageDataForm);
-
-            // ข้อมูลส่วนตัวและค่าลดหย่อนภาษี
-            const dataToSend = {
-                telegram_id: formData.get('telegram_id') || '',
-                annual_income_type: formData.get('annual_income_type') || '',
-                deductible_personal: parseFloat(formData.get('deductible_personal')) || 0,
-                deductible_spouse: parseFloat(formData.get('deductible_spouse')) || 0,
-                deductible_child: parseFloat(formData.get('deductible_child')) || 0,
-                deductible_insurance: parseFloat(formData.get('deductible_insurance')) || 0,
-                deductible_investment: parseFloat(formData.get('deductible_investment')) || 0,
-                deductible_donation: parseFloat(formData.get('deductible_donation')) || 0,
-            };
-
-            // ดึงข้อมูลรายรับหลายรายการ
-            dataToSend.incomes = [];
-            for (let i = 1; i <= incomeCounter; i++) {
-                const date = formData.get(`income_date_${i}`);
-                const detail = formData.get(`income_description_${i}`);
-                const amount = parseFloat(formData.get(`income_amount_${i}`));
-                if (date && detail && !isNaN(amount)) {
-                    dataToSend.incomes.push({
-                        date,
-                        detail,
-                        amount
-                    });
-                }
-            }
-
-            // ดึงข้อมูลรายจ่ายหลายรายการ
-            dataToSend.expenses = [];
-            for (let i = 1; i <= expenseCounter; i++) {
-                const date = formData.get(`expense_date_${i}`);
-                const detail = formData.get(`expense_description_${i}`);
-                const amount = parseFloat(formData.get(`expense_amount_${i}`));
-                const type = formData.get(`expense_type_${i}`);
-                if (date && detail && !isNaN(amount) && type) {
-                    dataToSend.expenses.push({
-                        date,
-                        detail,
-                        amount,
-                        type
-                    });
-                }
-            }
-
-            // ดึงข้อมูลค่าบริการรายเดือนหลายรายการ
-            dataToSend.subscriptions = [];
-            for (let i = 1; i <= subscriptionCounter; i++) {
-                const name = formData.get(`subscription_name_${i}`);
-                const cost = parseFloat(formData.get(`subscription_cost_${i}`));
-                if (name && !isNaN(cost)) {
-                    dataToSend.subscriptions.push({
-                        name,
-                        cost
-                    });
-                }
-            }
-
-            // ดึงข้อมูลหนี้สินหลายรายการ
-            dataToSend.debts = [];
-            for (let i = 1; i <= debtCounter; i++) {
-                const name = formData.get(`debt_name_${i}`);
-                const amount = parseFloat(formData.get(`debt_amount_${i}`));
-                const apr = parseFloat(formData.get(`debt_interest_rate_${i}`));
-                const dueDate = formData.get(`debt_due_date_${i}`);
-                if (name && !isNaN(amount) && !isNaN(apr) && dueDate) {
-                    dataToSend.debts.push({
-                        name,
-                        amount,
-                        apr,
-                        dueDate
-                    });
-                }
-            }
-
-            // ส่งข้อมูล JSON ไป n8n webhook
-            const res = await fetch(N8N_WEBHOOK_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dataToSend)
-            });
-
-            if (res.ok) {
-                formResponseMessage.textContent = '✅ ส่งข้อมูลสำเร็จแล้ว!';
-                formResponseMessage.style.color = 'green';
-
-                finsageDataForm.reset();
-                document.getElementById('incomeList').innerHTML = '';
-                document.getElementById('expenseList').innerHTML = '';
-                document.getElementById('subscriptionList').innerHTML = '';
-                document.getElementById('debtList').innerHTML = '';
-
-                incomeCounter = 0;
-                expenseCounter = 0;
-                subscriptionCounter = 0;
-                debtCounter = 0;
-
-                addIncome();
-                addExpense();
-            } else {
-                throw new Error(`HTTP error! Status: ${res.status}`);
-            }
-        } catch (err) {
-            formResponseMessage.textContent = '❌ ส่งข้อมูลล้มเหลว: ' + err.message;
-            formResponseMessage.style.color = 'red';
+            `;
+            expenseList.appendChild(expenseItem);
         }
-    });
-}
 
-// โหลดรายการเริ่มต้น
-window.addEventListener('load', function () {
-    addIncome();
-    addExpense();
-});
-</script>
+        function addSubscription() {
+            subscriptionCounter++;
+            const list = document.getElementById('subscriptionList');
+            const item = document.createElement('div');
+            item.className = 'dynamic-item';
+            item.innerHTML = `
+                <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>ชื่อบริการ</label>
+                        <input type="text" name="subscription_name_${subscriptionCounter}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>ค่าบริการต่อเดือน (บาท)</label>
+                        <input type="number" name="subscription_cost_${subscriptionCounter}" min="0" step="0.01" required>
+                    </div>
+                </div>
+            `;
+            list.appendChild(item);
+        }
+
+        function addDebt() {
+            debtCounter++;
+            const list = document.getElementById('debtList');
+            const item = document.createElement('div');
+            item.className = 'dynamic-item';
+            item.innerHTML = `
+                <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>ชื่อหนี้</label>
+                        <input type="text" name="debt_name_${debtCounter}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>ยอดหนี้คงเหลือ (บาท)</label>
+                        <input type="number" name="debt_amount_${debtCounter}" min="0" step="0.01" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>อัตราดอกเบี้ยต่อปี (%)</label>
+                        <input type="number" name="debt_interest_rate_${debtCounter}" min="0" max="100" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>วันครบรอบจ่าย</label>
+                        <input type="date" name="debt_due_date_${debtCounter}" required>
+                    </div>
+                </div>
+            `;
+            list.appendChild(item);
+        }
+
+        function removeItem(button) {
+            button.parentElement.remove();
+        }
+
+        const N8N_WEBHOOK_URL = 'https://www222.app.n8n.cloud/webhook-test/c68f863e-4785-4ab4-93d1-a4397ffed2e3';
+        const finsageDataForm = document.getElementById('finsageDataForm');
+        const loadingDiv = document.getElementById('loading');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+
+        if (finsageDataForm) {
+            finsageDataForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                loadingDiv.classList.add('show');
+                successMessage.style.display = 'none';
+                errorMessage.style.display = 'none';
+
+                try {
+                    const formData = new FormData(finsageDataForm);
+                    
+                    const dataToSend = {
+                        telegram_id: formData.get('telegram_id') || '',
+                        annual_income_type: formData.get('annual_income_type') || '',
+                        deductible_personal: parseFloat(formData.get('deductible_personal')) || 0,
+                        deductible_spouse: parseFloat(formData.get('deductible_spouse')) || 0,
+                        deductible_child: parseFloat(formData.get('deductible_child')) || 0,
+                        deductible_insurance: parseFloat(formData.get('deductible_insurance')) || 0,
+                        deductible_investment: parseFloat(formData.get('deductible_investment')) || 0,
+                        deductible_donation: parseFloat(formData.get('deductible_donation')) || 0,
+                        incomes: [],
+                        expenses: [],
+                        subscriptions: [],
+                        debts: []
+                    };
+
+                    for (let i = 1; i <= incomeCounter; i++) {
+                        const date = formData.get(`income_date_${i}`);
+                        const detail = formData.get(`income_description_${i}`);
+                        const amount = parseFloat(formData.get(`income_amount_${i}`));
+                        if (date && detail && !isNaN(amount)) {
+                            dataToSend.incomes.push({ date, detail, amount });
+                        }
+                    }
+
+                    for (let i = 1; i <= expenseCounter; i++) {
+                        const date = formData.get(`expense_date_${i}`);
+                        const detail = formData.get(`expense_description_${i}`);
+                        const amount = parseFloat(formData.get(`expense_amount_${i}`));
+                        const type = formData.get(`expense_type_${i}`);
+                        if (date && detail && !isNaN(amount) && type) {
+                            dataToSend.expenses.push({ date, detail, amount, type });
+                        }
+                    }
+
+                    for (let i = 1; i <= subscriptionCounter; i++) {
+                        const name = formData.get(`subscription_name_${i}`);
+                        const cost = parseFloat(formData.get(`subscription_cost_${i}`));
+                        if (name && !isNaN(cost)) {
+                            dataToSend.subscriptions.push({ name, cost });
+                        }
+                    }
+
+                    for (let i = 1; i <= debtCounter; i++) {
+                        const name = formData.get(`debt_name_${i}`);
+                        const amount = parseFloat(formData.get(`debt_amount_${i}`));
+                        const apr = parseFloat(formData.get(`debt_interest_rate_${i}`));
+                        const dueDate = formData.get(`debt_due_date_${i}`);
+                        if (name && !isNaN(amount) && !isNaN(apr) && dueDate) {
+                            dataToSend.debts.push({ name, amount, apr, dueDate });
+                        }
+                    }
+
+                    const res = await fetch(N8N_WEBHOOK_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(dataToSend)
+                    });
+                    
+                    loadingDiv.classList.remove('show');
+
+                    if (res.ok) {
+                        successMessage.style.display = 'block';
+                        finsageDataForm.reset();
+                        
+                        document.getElementById('incomeList').innerHTML = '';
+                        document.getElementById('expenseList').innerHTML = '';
+                        document.getElementById('subscriptionList').innerHTML = '';
+                        document.getElementById('debtList').innerHTML = '';
+                        
+                        incomeCounter = 0;
+                        expenseCounter = 0;
+                        subscriptionCounter = 0;
+                        debtCounter = 0;
+                        
+                        addIncome();
+                        addExpense();
+                    } else {
+                        throw new Error(`HTTP error! Status: ${res.status}`);
+                    }
+                } catch (err) {
+                    loadingDiv.classList.remove('show');
+                    errorMessage.textContent = '❌ เกิดข้อผิดพลาดในการส่งข้อมูล: ' + err.message;
+                    errorMessage.style.display = 'block';
+                }
+            });
+        }
+
+        window.addEventListener('load', function () {
+            addIncome();
+            addExpense();
+        });
+    </script>
 </body>
-
 </html>
