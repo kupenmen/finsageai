@@ -606,63 +606,67 @@
     // (เริ่มจาก const N8N_WEBHOOK_URL จนถึงวงเล็บปีกกาปิดตัวสุดท้ายของ if/else block นี้)
     // ====================================================================
 
-    // 1. กำหนด Webhook URL ของ n8n
-    const N8N_WEBHOOK_URL = 'https://ss2.app.n8n.cloud/webhook-test/e5dfb08e-2505-4ecd-9732-59d7b402619b';
+// ====================================================================
+// * คัดลอกโค้ดข้างล่างนี้ไปวาง "แทนที่" ในส่วน JavaScript สำหรับ Webhook ของคุณ *
+// ====================================================================
 
-    // 2. รับ Reference ไปยังฟอร์มและพื้นที่แสดงข้อความตอบกลับ
-    const finsageDataForm = document.getElementById('finsageDataForm');
-    const formResponseMessage = document.getElementById('formResponseMessage');
+// 1. กำหนด Webhook URL ของ n8n (อัปเดตแล้วตามที่ขอ)
+const N8N_WEBHOOK_URL = 'https://www222.app.n8n.cloud/webhook/c68f863e-4785-4ab4-93d1-a4397ffed2e3';
 
-    // 3. ตรวจสอบว่าฟอร์มมีอยู่จริง แล้วเพิ่ม Event Listener
-    if (finsageDataForm) {
-        finsageDataForm.addEventListener('submit', async (event) => {
-            event.preventDefault(); // ป้องกันการรีเฟรชหน้าเว็บเมื่อ Submit ฟอร์ม
+// 2. รับ Reference ไปยังฟอร์มและพื้นที่แสดงข้อความตอบกลับ
+const finsageDataForm = document.getElementById('finsageDataForm');
+const formResponseMessage = document.getElementById('formResponseMessage');
 
-            const formData = new FormData(finsageDataForm);
-            const dataToSend = {};
-            for (const [key, value] of formData.entries()) {
-                dataToSend[key] = value;
-            }
+// 3. ตรวจสอบว่าฟอร์มมีอยู่จริง แล้วเพิ่ม Event Listener
+if (finsageDataForm) {
+    finsageDataForm.addEventListener('submit', async (event) => {
+        event.preventDefault(); // ป้องกันการรีเฟรชหน้าเว็บเมื่อ Submit ฟอร์ม
 
-            formResponseMessage.textContent = 'กำลังส่งข้อมูล... โปรดรอสักครู่';
-            formResponseMessage.style.color = 'blue';
-            formResponseMessage.style.backgroundColor = '#e0f7fa';
+        const formData = new FormData(finsageDataForm);
+        const dataToSend = {};
+        for (const [key, value] of formData.entries()) {
+            dataToSend[key] = value;
+        }
 
-            try {
-                const response = await fetch(N8N_WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dataToSend)
-                });
+        formResponseMessage.textContent = 'กำลังส่งข้อมูล... โปรดรอสักครู่';
+        formResponseMessage.style.color = 'blue';
+        formResponseMessage.style.backgroundColor = '#e0f7fa';
 
-                if (response.ok) { // <<< จุดเริ่มต้น if (สังเกตวงเล็บปีกกา { และ } ที่จับคู่กัน)
-                    const result = await response.json();
-                    formResponseMessage.textContent = 'ส่งข้อมูลสำเร็จแล้ว! ✨ ข้อมูลจะปรากฏใน Google Sheet สักครู่';
-                    formResponseMessage.style.color = 'green';
-                    formResponseMessage.style.backgroundColor = '#e8f5e9';
-                    finsageDataForm.reset();
-                    console.log('ส่งข้อมูลสำเร็จ:', result);
-                } else { // <<< จุดเริ่มต้น else
-                    const errorDetails = await response.text();
-                   formResponseMessage.textContent = 'เกิดข้อผิดพลาดในการส่งข้อมูล: ' + response.status + ' - ' + String(errorDetails);
-                    formResponseMessage.style.color = 'red';
-                    formResponseMessage.style.backgroundColor = '#ffebee';
-                    console.error('เกิดข้อผิดพลาดในการตอบกลับจาก Webhook:', response.status, errorDetails);
-                } // <<< ปิด if/else block
-            } catch (error) { // <<< จุดเริ่มต้น catch
-                formResponseMessage.textContent = 'ไม่สามารถเชื่อมต่อได้: ' + error.message;
+        try {
+            const response = await fetch(N8N_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dataToSend)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                formResponseMessage.textContent = 'ส่งข้อมูลสำเร็จแล้ว! ✨ ข้อมูลจะปรากฏใน Google Sheet สักครู่';
+                formResponseMessage.style.color = 'green';
+                formResponseMessage.style.backgroundColor = '#e8f5e9';
+                finsageDataForm.reset();
+                console.log('ส่งข้อมูลสำเร็จ:', result);
+            } else {
+                const errorDetails = await response.text();
+                formResponseMessage.textContent = 'เกิดข้อผิดพลาดในการส่งข้อมูล: ' + response.status + ' - ' + String(errorDetails);
                 formResponseMessage.style.color = 'red';
                 formResponseMessage.style.backgroundColor = '#ffebee';
-                console.error('ข้อผิดพลาดเครือข่าย:', error);
-            } // <<< ปิด catch block
-        }); // <<< ปิด addEventListener callback
-    } else { // <<< จุดเริ่มต้น else ของ if (finsageDataForm)
-        console.error('ไม่พบฟอร์ม HTML ที่มี id="finsageDataForm" กรุณาตรวจสอบ!');
-    } // <<< ปิด else ของ if (finsageDataForm)
+                console.error('เกิดข้อผิดพลาดในการตอบกลับจาก Webhook:', response.status, errorDetails);
+            }
+        } catch (error) {
+            formResponseMessage.textContent = 'ไม่สามารถเชื่อมต่อได้: ' + error.message;
+            formResponseMessage.style.color = 'red';
+            formResponseMessage.style.backgroundColor = '#ffebee';
+            console.error('ข้อผิดพลาดเครือข่าย:', error);
+        }
+    });
+} else {
+    console.error('ไม่พบฟอร์ม HTML ที่มี id="finsageDataForm" กรุณาตรวจสอบ!');
+}
+// ====================================================================
+// * สิ้นสุดโค้ด JavaScript สำหรับ Webhook *
+// ====================================================================
 
-    // ====================================================================
-    // * สิ้นสุดโค้ด JavaScript สำหรับ Webhook *
-    // ====================================================================
 </script>
 </body>
 
