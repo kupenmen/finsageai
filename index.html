@@ -515,65 +515,122 @@ function addDebt() {
             </div>
         </div>
     `;
-    debtList.appendChild(debtItem);
+   let incomeCounter = 0;
+let expenseCounter = 0;
+let subscriptionCounter = 0;
+let debtCounter = 0;
+
+// เพิ่มรายรับ
+function addIncome() {
+    incomeCounter++;
+    const incomeList = document.getElementById('incomeList');
+    const div = document.createElement('div');
+    div.className = 'dynamic-item';
+    div.innerHTML = `
+        <button type="button" onclick="removeItem(this)">×</button>
+        <input type="date" name="Date_${incomeCounter}" required>
+        <input type="text" name="Detail_${incomeCounter}" placeholder="รายละเอียด" required>
+        <input type="number" name="Income_${incomeCounter}" placeholder="รายรับ" required>
+    `;
+    incomeList.appendChild(div);
 }
 
-// ลบรายการ (ใช้กับทุกส่วน)
+// เพิ่มรายจ่าย
+function addExpense() {
+    expenseCounter++;
+    const expenseList = document.getElementById('expenseList');
+    const div = document.createElement('div');
+    div.className = 'dynamic-item';
+    div.innerHTML = `
+        <button type="button" onclick="removeItem(this)">×</button>
+        <input type="date" name="Date_Expense_${expenseCounter}" required>
+        <input type="text" name="Detail_Expense_${expenseCounter}" placeholder="รายละเอียด" required>
+        <input type="number" name="Amount_${expenseCounter}" placeholder="จำนวนเงิน" required>
+        <select name="Necwssary_Discretionary_${expenseCounter}" required>
+            <option value="">ประเภท</option>
+            <option value="Necessary">จำเป็น</option>
+            <option value="Discretionary">ฟุ่มเฟือย</option>
+        </select>
+    `;
+    expenseList.appendChild(div);
+}
+
+// เพิ่มค่าบริการรายเดือน
+function addSubscription() {
+    subscriptionCounter++;
+    const subscriptionList = document.getElementById('subscriptionList');
+    const div = document.createElement('div');
+    div.className = 'dynamic-item';
+    div.innerHTML = `
+        <button type="button" onclick="removeItem(this)">×</button>
+        <input type="text" name="Monthly_Subscription_Fee_Detail_${subscriptionCounter}" placeholder="ค่าบริการรายเดือน" required>
+        <input type="number" name="Amount_per_Month_${subscriptionCounter}" placeholder="จำนวนเงิน/เดือน" required>
+    `;
+    subscriptionList.appendChild(div);
+}
+
+// เพิ่มหนี้สิน
+function addDebt() {
+    debtCounter++;
+    const debtList = document.getElementById('debtList');
+    const div = document.createElement('div');
+    div.className = 'dynamic-item';
+    div.innerHTML = `
+        <button type="button" onclick="removeItem(this)">×</button>
+        <input type="text" name="Liablities_Detail_${debtCounter}" placeholder="รายละเอียดหนี้สิน" required>
+        <input type="number" name="Outhstanding_Balance_${debtCounter}" placeholder="ยอดหนี้คงเหลือ" required>
+        <input type="number" name="APR_${debtCounter}" placeholder="APR (%)" step="0.01" required>
+        <input type="date" name="Payment_Due_Date_${debtCounter}" placeholder="วันครบกำหนด" required>
+    `;
+    debtList.appendChild(div);
+}
+
+// ลบรายการ
 function removeItem(button) {
     button.parentElement.remove();
 }
 
-// Webhook URL ที่จะส่งข้อมูล
+// webhook URL
 const N8N_WEBHOOK_URL = 'https://www222.app.n8n.cloud/webhook/c68f863e-4785-4ab4-93d1-a4397ffed2e3';
 
-const finsageDataForm = document.getElementById('finsageDataForm');
+// ส่งข้อมูล
+document.getElementById('finsageDataForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const formData = new FormData(this);
+    const dataToSend = {};
 
-if (finsageDataForm) {
-    finsageDataForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    // ฟิลด์ Telegram ID และข้อมูลภาษีที่ไม่ใช่ dynamic
+    const staticFields = ['telegram_id', 'annual_income_type', 'deductible_personal', 'deductible_spouse', 'deductible_child', 'deductible_insurance', 'deductible_investment', 'deductible_donation'];
+    staticFields.forEach(f => dataToSend[f] = formData.get(f) || '');
 
-        // เริ่มเก็บข้อมูล form
-        const formData = new FormData(finsageDataForm);
-        const dataToSend = {};
+    // เก็บ dynamic รายรับ
+    for(let i=1; i<=incomeCounter; i++){
+        dataToSend[`Date_${i}`] = formData.get(`Date_${i}`) || '';
+        dataToSend[`Detail_${i}`] = formData.get(`Detail_${i}`) || '';
+        dataToSend[`Income_${i}`] = formData.get(`Income_${i}`) || '';
+    }
 
-        // เพิ่ม Telegram ID และข้อมูลภาษี ที่อยู่นอก dynamic list
-        dataToSend.telegram_id = formData.get('telegram_id');
-        dataToSend.annual_income_type = formData.get('annual_income_type');
-        dataToSend.deductible_personal = formData.get('deductible_personal');
-        dataToSend.deductible_spouse = formData.get('deductible_spouse');
-        dataToSend.deductible_child = formData.get('deductible_child');
-        dataToSend.deductible_insurance = formData.get('deductible_insurance');
-        dataToSend.deductible_investment = formData.get('deductible_investment');
-        dataToSend.deductible_donation = formData.get('deductible_donation');
+    // เก็บ dynamic รายจ่าย
+    for(let i=1; i<=expenseCounter; i++){
+        dataToSend[`Date_Expense_${i}`] = formData.get(`Date_Expense_${i}`) || '';
+        dataToSend[`Detail_Expense_${i}`] = formData.get(`Detail_Expense_${i}`) || '';
+        dataToSend[`Amount_${i}`] = formData.get(`Amount_${i}`) || '';
+        dataToSend[`Necwssary_Discretionary_${i}`] = formData.get(`Necwssary_Discretionary_${i}`) || '';
+    }
 
-        // เก็บข้อมูล dynamic list รายรับ
-        for(let i = 1; i <= incomeCounter; i++) {
-            dataToSend[`Date_${i}`] = formData.get(`Date_${i}`) || '';
-            dataToSend[`Detail_${i}`] = formData.get(`Detail_${i}`) || '';
-            dataToSend[`Income_${i}`] = formData.get(`Income_${i}`) || '';
-        }
+    // เก็บ dynamic ค่าบริการรายเดือน
+    for(let i=1; i<=subscriptionCounter; i++){
+        dataToSend[`Monthly_Subscription_Fee_Detail_${i}`] = formData.get(`Monthly_Subscription_Fee_Detail_${i}`) || '';
+        dataToSend[`Amount_per_Month_${i}`] = formData.get(`Amount_per_Month_${i}`) || '';
+    }
 
-        // เก็บข้อมูล dynamic list รายจ่าย
-        for(let i = 1; i <= expenseCounter; i++) {
-            dataToSend[`Date_Expense_${i}`] = formData.get(`Date_Expense_${i}`) || '';
-            dataToSend[`Detail_Expense_${i}`] = formData.get(`Detail_Expense_${i}`) || '';
-            dataToSend[`Amount_${i}`] = formData.get(`Amount_${i}`) || '';
-            dataToSend[`Necwssary_Discretionary_${i}`] = formData.get(`Necwssary_Discretionary_${i}`) || '';
-        }
-
-        // เก็บข้อมูล dynamic list ค่าบริการรายเดือน
-        for(let i = 1; i <= subscriptionCounter; i++) {
-            dataToSend[`Monthly_Subscription_Fee_Detail_${i}`] = formData.get(`Monthly_Subscription_Fee_Detail_${i}`) || '';
-            dataToSend[`Amount_per_Month_${i}`] = formData.get(`Amount_per_Month_${i}`) || '';
-        }
-
-        // เก็บข้อมูล dynamic list หนี้สิน
-        for(let i = 1; i <= debtCounter; i++) {
-            dataToSend[`Liablities_Detail_${i}`] = formData.get(`Liablities_Detail_${i}`) || '';
-            dataToSend[`Outhstanding_Balance_${i}`] = formData.get(`Outhstanding_Balance_${i}`) || '';
-            dataToSend[`APR_${i}`] = formData.get(`APR_${i}`) || '';
-            dataToSend[`Payment_Due_Date
-
+    // เก็บ dynamic หนี้สิน
+    for(let i=1; i<=debtCounter; i++){
+        dataToSend[`Liablities_Detail_${i}`] = formData.get(`Liablities_Detail_${i}`) || '';
+        dataToSend[`Outhstanding_Balance_${i}`] = formData.get(`Outhstanding_Balance_${i}`) || '';
+        dataToSend[`APR_${i}`] = formData.get(`APR_${i}`) || '';
+        dataToSend[`Payment_Due_Date_${i}`] = formData.get(`Payment_Due_Date_${i}`) || '';
+    }
 
 const N8N_WEBHOOK_URL = 'https://www222.app.n8n.cloud/webhook-test/c68f863e-4785-4ab4-93d1-a4397ffed2e3';
 const finsageDataForm = document.getElementById('finsageDataForm');
