@@ -372,151 +372,74 @@
     </div>
 
 <script>
-    let incomeCounter = 0;
-    let expenseCounter = 0;
-    let subscriptionCounter = 0;
-    let debtCounter = 0;
+  const N8N_WEBHOOK_URL = 'https://www222.app.n8n.cloud/webhook-test/c68f863e-4785-4ab4-93d1-a4397ffed2e3';
 
-    function removeItem(button) {
-        button.parentElement.remove();
-    }
+const finsageDataForm = document.getElementById('finsageDataForm');
+const formResponseMessage = document.getElementById('formResponseMessage');
 
-    function addIncome() {
-        incomeCounter++;
-        const container = document.getElementById('incomeList');
-        const div = document.createElement('div');
-        div.className = 'dynamic-item';
-        div.innerHTML = `
-            <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
-            <label>วันที่: <input type="date" name="income_date_${incomeCounter}" required></label>
-            <label>รายละเอียด: <input type="text" name="income_detail_${incomeCounter}" required></label>
-            <label>จำนวนเงิน: <input type="number" name="income_amount_${incomeCounter}" step="0.01" required></label>
-        `;
-        container.appendChild(div);
-    }
+finsageDataForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-    function addExpense() {
-        expenseCounter++;
-        const container = document.getElementById('expenseList');
-        const div = document.createElement('div');
-        div.className = 'dynamic-item';
-        div.innerHTML = `
-            <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
-            <label>วันที่: <input type="date" name="expense_date_${expenseCounter}" required></label>
-            <label>รายละเอียด: <input type="text" name="expense_detail_${expenseCounter}" required></label>
-            <label>จำนวนเงิน: <input type="number" name="expense_amount_${expenseCounter}" step="0.01" required></label>
-        `;
-        container.appendChild(div);
-    }
+    formResponseMessage.textContent = '⏳ กำลังส่งข้อมูล...';
+    formResponseMessage.style.color = 'blue';
 
-    function addSubscription() {
-        subscriptionCounter++;
-        const container = document.getElementById('subscriptionList');
-        const div = document.createElement('div');
-        div.className = 'dynamic-item';
-        div.innerHTML = `
-            <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
-            <label>ชื่อบริการ: <input type="text" name="subscription_name_${subscriptionCounter}" required></label>
-            <label>จำนวนเงิน (บาท): <input type="number" name="subscription_amount_${subscriptionCounter}" step="0.01" required></label>
-        `;
-        container.appendChild(div);
-    }
+    const formData = new FormData(finsageDataForm);
 
-    function addDebt() {
-        debtCounter++;
-        const container = document.getElementById('debtList');
-        const div = document.createElement('div');
-        div.className = 'dynamic-item';
-        div.innerHTML = `
-            <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
-            <label>รายละเอียดหนี้: <input type="text" name="debt_detail_${debtCounter}" required></label>
-            <label>ยอดคงเหลือ (บาท): <input type="number" name="debt_balance_${debtCounter}" step="0.01" required></label>
-            <label>อัตราดอกเบี้ย (% ต่อปี): <input type="number" name="debt_apr_${debtCounter}" step="0.01" required></label>
-            <label>วันครบกำหนดชำระ: <input type="date" name="debt_due_date_${debtCounter}" required></label>
-        `;
-        container.appendChild(div);
-    }
+    const dataToSend = {
+        // A
+        "Telegram ID": formData.get("telegram_id") || "",
 
-    // เริ่มต้นเพิ่มช่องข้อมูล 1 รายการ
-    window.onload = () => {
-        addIncome();
-        addExpense();
-        addSubscription();
-        addDebt();
-    }
+        // รายรับ: B-D
+        "Date": formData.get("income_date_1") || "",
+        "Detail": formData.get("income_description_1") || "",
+        "Income": formData.get("income_amount_1") || "",
 
-    // ฟังก์ชันส่งข้อมูล form ผ่าน fetch POST
-    document.getElementById('finsageDataForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
+        // รายจ่าย: E-H
+        "Date_Expense": formData.get("expense_date_1") || "",
+        "Detail_Expense": formData.get("expense_description_1") || "",
+        "Amount": formData.get("expense_amount_1") || "",
+        "Necessary/Discretionary expense": formData.get("expense_type_1") || "",
 
-        const loading = document.getElementById('loading');
-        const successMessage = document.getElementById('successMessage');
-        const errorMessage = document.getElementById('errorMessage');
+        // Subscription: I-K
+        "Date_Subscription": "", // ไม่มี input วัน ต้องเพิ่มในฟอร์มหากต้องการ
+        "Monthly Subscription Fee Detail": formData.get("subscription_name_1") || "",
+        "Amount per Month": formData.get("subscription_cost_1") || "",
 
-        successMessage.style.display = 'none';
-        errorMessage.style.display = 'none';
-        loading.classList.add('show');
+        // หนี้: L-O
+        "Liabilities Detail": formData.get("debt_name_1") || "",
+        "Outstanding Balance": formData.get("debt_amount_1") || "",
+        "APR": formData.get("debt_interest_rate_1") || "",
+        "Payment Due Date": formData.get("debt_due_date_1") || "",
 
-        // รวบรวมข้อมูล form
-        const formData = new FormData(this);
+        // ภาษี: P–T
+        "Annual Assessable Income": formData.get("annual_income_type") || "",
+        "Spouse Allowance": formData.get("deductible_spouse") || "",
+        "Life Insurance Premium": formData.get("deductible_insurance") || "",
+        "Investment Allowance": formData.get("deductible_investment") || "",
+        "Donation Allowance": formData.get("deductible_donation") || ""
+    };
 
-        // แปลง formData เป็น JSON
-        const data = {};
-        formData.forEach((value, key) => {
-            if(data[key]) {
-                // ถ้ามีหลายค่าของ key เดียวกัน ให้เก็บเป็น array
-                if(Array.isArray(data[key])) {
-                    data[key].push(value);
-                } else {
-                    data[key] = [data[key], value];
-                }
-            } else {
-                data[key] = value;
-            }
+    try {
+        const res = await fetch(N8N_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dataToSend)
         });
 
-        try {
-            // แทนที่ URL webhook ของ n8n ของคุณด้านล่าง
-            const webhookURL = 'https://www222.app.n8n.cloud/webhook-test/c68f863e-4785-4ab4-93d1-a4397ffed2e3';
+        formResponseMessage.textContent = '✅ ส่งข้อมูลสำเร็จแล้ว!';
+        formResponseMessage.style.color = 'green';
+        finsageDataForm.reset();
 
-            const response = await fetch(webhookURL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
+        document.getElementById('incomeList').innerHTML = '';
+        document.getElementById('expenseList').innerHTML = '';
+        document.getElementById('subscriptionList').innerHTML = '';
+        document.getElementById('debtList').innerHTML = '';
+    } catch (err) {
+        formResponseMessage.textContent = '❌ ส่งข้อมูลล้มเหลว: ' + err.message;
+        formResponseMessage.style.color = 'red';
+    }
+});
 
-            loading.classList.remove('show');
-
-            if(response.ok) {
-                successMessage.style.display = 'block';
-                this.reset();
-
-                // เคลียร์รายการไดนามิก
-                document.getElementById('incomeList').innerHTML = '';
-                document.getElementById('expenseList').innerHTML = '';
-                document.getElementById('subscriptionList').innerHTML = '';
-                document.getElementById('debtList').innerHTML = '';
-
-                incomeCounter = 0;
-                expenseCounter = 0;
-                subscriptionCounter = 0;
-                debtCounter = 0;
-
-                addIncome();
-                addExpense();
-                addSubscription();
-                addDebt();
-            } else {
-                errorMessage.style.display = 'block';
-            }
-        } catch (error) {
-            loading.classList.remove('show');
-            errorMessage.style.display = 'block';
-            console.error('Error submitting form:', error);
-        }
-    });
 </script>
 
 </body>
