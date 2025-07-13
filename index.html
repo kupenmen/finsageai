@@ -372,62 +372,7 @@
     </div>
 
 <script>
-let incomeCounter = 0;
-let expenseCounter = 0;
-let subscriptionCounter = 0;
-let debtCounter = 0;
-
-function addIncome() {
-    incomeCounter++;
-    const incomeList = document.getElementById('incomeList');
-    const incomeItem = document.createElement('div');
-    incomeItem.className = 'dynamic-item';
-    incomeItem.innerHTML = `
-        <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
-        <div class="form-row-3">
-            <div class="form-group">
-                <label>วันที่</label>
-                <input type="date" name="Date_${incomeCounter}" required>
-            </div>
-            <div class="form-group">
-                <label>รายละเอียด</label>
-                <input type="text" name="Detail_${incomeCounter}" placeholder="เช่น เงินเดือน, โบนัส" required>
-            </div>
-            <div class="form-group">
-                <label>รายรับ (บาท)</label>
-                <input type="number" name="Income_${incomeCounter}" step="0.01" required>
-            </div>
-        </div>
-    `;
-   let incomeCounter = 0;
-let expenseCounter = 0;
-let subscriptionCounter = 0;
-let debtCounter = 0;
-
-// เพิ่มรายรับ
-function addIncome() {
-    incomeCounter++;
-    const incomeList = document.getElementById('incomeList');
-    const incomeItem = document.createElement('div');
-    incomeItem.className = 'dynamic-item';
-    incomeItem.innerHTML = `
-        <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
-        <div class="form-row-3">
-            <div class="form-group">
-                <label>วันที่ (Date)</label>
-                <input type="date" name="Date_${incomeCounter}" required>
-            </div>
-            <div class="form-group">
-                <label>รายละเอียด (Detail)</label>
-                <input type="text" name="Detail_${incomeCounter}" placeholder="เช่น เงินเดือน, โบนัส" required>
-            </div>
-            <div class="form-group">
-                <label>รายรับ (Income)</label>
-                <input type="number" name="Income_${incomeCounter}" min="0" step="0.01" required>
-            </div>
-        </div>
-    `;
-    let incomeCounter = 1;
+let incomeCounter = 1;
 let expenseCounter = 1;
 let subscriptionCounter = 1;
 let debtCounter = 1;
@@ -438,9 +383,20 @@ function addIncome() {
     div.className = 'dynamic-item';
     div.innerHTML = `
         <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
-        <label>วันที่</label><input type="date" name="Date_1_${incomeCounter}" required>
-        <label>รายละเอียด</label><input type="text" name="Detail_1_${incomeCounter}" required>
-        <label>รายรับ</label><input type="number" name="Income_1_${incomeCounter}" required>
+        <div class="form-row-3">
+            <div class="form-group">
+                <label>วันที่</label>
+                <input type="date" name="Date_1_${incomeCounter}" required>
+            </div>
+            <div class="form-group">
+                <label>รายละเอียด</label>
+                <input type="text" name="Detail_1_${incomeCounter}" placeholder="เช่น เงินเดือน โบนัส" required>
+            </div>
+            <div class="form-group">
+                <label>รายรับ (บาท)</label>
+                <input type="number" name="Income_1_${incomeCounter}" step="0.01" min="0" required>
+            </div>
+        </div>
     `;
     list.appendChild(div);
     incomeCounter++;
@@ -452,14 +408,30 @@ function addExpense() {
     div.className = 'dynamic-item';
     div.innerHTML = `
         <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
-        <label>วันที่</label><input type="date" name="Date_Expense_1_${expenseCounter}" required>
-        <label>รายละเอียด</label><input type="text" name="Detail_Expense_1_${expenseCounter}" required>
-        <label>จำนวนเงิน</label><input type="number" name="Amount_1_${expenseCounter}" required>
-        <label>จำเป็น/ฟุ่มเฟือย</label>
-        <select name="Necwssary_Discretionary_1_${expenseCounter}">
-            <option value="Necessary">จำเป็น</option>
-            <option value="Discretionary">ฟุ่มเฟือย</option>
-        </select>
+        <div class="form-row-3">
+            <div class="form-group">
+                <label>วันที่</label>
+                <input type="date" name="Date_Expense_1_${expenseCounter}" required>
+            </div>
+            <div class="form-group">
+                <label>รายละเอียด</label>
+                <input type="text" name="Detail_Expense_1_${expenseCounter}" placeholder="เช่น ค่าอาหาร ค่าน้ำมัน" required>
+            </div>
+            <div class="form-group">
+                <label>จำนวนเงิน (บาท)</label>
+                <input type="number" name="Amount_1_${expenseCounter}" step="0.01" min="0" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group" style="width: 50%;">
+                <label>จำเป็น / ฟุ่มเฟือย</label>
+                <select name="Necwssary_Discretionary_1_${expenseCounter}" required>
+                    <option value="">-- เลือกประเภท --</option>
+                    <option value="Necessary">จำเป็น</option>
+                    <option value="Discretionary">ฟุ่มเฟือย</option>
+                </select>
+            </div>
+        </div>
     `;
     list.appendChild(div);
     expenseCounter++;
@@ -497,6 +469,13 @@ function addDebt() {
 function removeItem(btn) {
     btn.parentElement.remove();
 }
+
+window.addEventListener('load', function () {
+    addIncome();
+    addExpense();
+});
+</script>
+
 
 const N8N_WEBHOOK_URL = 'https://www222.app.n8n.cloud/webhook-test/c68f863e-4785-4ab4-93d1-a4397ffed2e3';
 const form = document.getElementById('finsageDataForm');
