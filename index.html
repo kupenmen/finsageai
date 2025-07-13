@@ -372,74 +372,164 @@
     </div>
 
 <script>
-  const N8N_WEBHOOK_URL = 'https://www222.app.n8n.cloud/webhook-test/c68f863e-4785-4ab4-93d1-a4397ffed2e3';
+let incomeCounter = 0;
+let expenseCounter = 0;
+let subscriptionCounter = 0;
+let debtCounter = 0;
 
+function addIncome() {
+    incomeCounter++;
+    const incomeList = document.getElementById('incomeList');
+    const incomeItem = document.createElement('div');
+    incomeItem.className = 'dynamic-item';
+    incomeItem.innerHTML = `
+        <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
+        <div class="form-row-3">
+            <div class="form-group">
+                <label>วันที่</label>
+                <input type="date" name="Date_${incomeCounter}" required>
+            </div>
+            <div class="form-group">
+                <label>รายละเอียด</label>
+                <input type="text" name="Detail_${incomeCounter}" placeholder="เช่น เงินเดือน, โบนัส" required>
+            </div>
+            <div class="form-group">
+                <label>รายรับ (บาท)</label>
+                <input type="number" name="Income_${incomeCounter}" step="0.01" required>
+            </div>
+        </div>
+    `;
+    incomeList.appendChild(incomeItem);
+}
+
+function addExpense() {
+    expenseCounter++;
+    const expenseList = document.getElementById('expenseList');
+    const expenseItem = document.createElement('div');
+    expenseItem.className = 'dynamic-item';
+    expenseItem.innerHTML = `
+        <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
+        <div class="form-row-3">
+            <div class="form-group">
+                <label>วันที่</label>
+                <input type="date" name="Date_Expense_${expenseCounter}" required>
+            </div>
+            <div class="form-group">
+                <label>รายละเอียด</label>
+                <input type="text" name="Detail_Expense_${expenseCounter}" placeholder="เช่น ค่าอาหาร, ค่าน้ำมัน" required>
+            </div>
+            <div class="form-group">
+                <label>จำนวนเงิน (บาท)</label>
+                <input type="number" name="Amount_${expenseCounter}" step="0.01" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>ประเภท</label>
+            <select name="Necwssary_Discretionary_${expenseCounter}" required>
+                <option value="">เลือกประเภท</option>
+                <option value="Necessary">Necessary</option>
+                <option value="Discretionary">Discretionary</option>
+            </select>
+        </div>
+    `;
+    expenseList.appendChild(expenseItem);
+}
+
+function addSubscription() {
+    subscriptionCounter++;
+    const subscriptionList = document.getElementById('subscriptionList');
+    const item = document.createElement('div');
+    item.className = 'dynamic-item';
+    item.innerHTML = `
+        <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
+        <div class="form-row">
+            <div class="form-group">
+                <label>รายละเอียดบริการรายเดือน</label>
+                <input type="text" name="Monthly_Subscription_Fee_Detail_${subscriptionCounter}" required>
+            </div>
+            <div class="form-group">
+                <label>จำนวนเงินต่อเดือน (บาท)</label>
+                <input type="number" name="Amount_per_Month_${subscriptionCounter}" step="0.01" required>
+            </div>
+        </div>
+    `;
+    subscriptionList.appendChild(item);
+}
+
+function addDebt() {
+    debtCounter++;
+    const debtList = document.getElementById('debtList');
+    const item = document.createElement('div');
+    item.className = 'dynamic-item';
+    item.innerHTML = `
+        <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
+        <div class="form-row">
+            <div class="form-group">
+                <label>รายละเอียดหนี้สิน</label>
+                <input type="text" name="Liablities_Detail_${debtCounter}" required>
+            </div>
+            <div class="form-group">
+                <label>ยอดหนี้คงเหลือ</label>
+                <input type="number" name="Outhstanding_Balance_${debtCounter}" step="0.01" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>APR (%)</label>
+                <input type="number" name="APR_${debtCounter}" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label>วันครบกำหนดชำระ</label>
+                <input type="date" name="Payment_Due_Date_${debtCounter}" required>
+            </div>
+        </div>
+    `;
+    debtList.appendChild(item);
+}
+
+function removeItem(button) {
+    button.parentElement.remove();
+}
+
+const N8N_WEBHOOK_URL = 'https://www222.app.n8n.cloud/webhook-test/c68f863e-4785-4ab4-93d1-a4397ffed2e3';
 const finsageDataForm = document.getElementById('finsageDataForm');
-const formResponseMessage = document.getElementById('formResponseMessage');
 
-finsageDataForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+if (finsageDataForm) {
+    finsageDataForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-    formResponseMessage.textContent = '⏳ กำลังส่งข้อมูล...';
-    formResponseMessage.style.color = 'blue';
+        const formData = new FormData(finsageDataForm);
+        const dataToSend = {};
 
-    const formData = new FormData(finsageDataForm);
+        for (const [key, value] of formData.entries()) {
+            dataToSend[key] = value;
+        }
 
-    const dataToSend = {
-        // A
-        "Telegram ID": formData.get("telegram_id") || "",
+        try {
+            const res = await fetch(N8N_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dataToSend)
+            });
 
-        // รายรับ: B-D
-        "Date": formData.get("income_date_1") || "",
-        "Detail": formData.get("income_description_1") || "",
-        "Income": formData.get("income_amount_1") || "",
+            alert("✅ ส่งข้อมูลสำเร็จ!");
+            finsageDataForm.reset();
+            document.getElementById('incomeList').innerHTML = '';
+            document.getElementById('expenseList').innerHTML = '';
+            document.getElementById('subscriptionList').innerHTML = '';
+            document.getElementById('debtList').innerHTML = '';
+            addIncome();
+            addExpense();
+        } catch (err) {
+            alert("❌ ส่งข้อมูลล้มเหลว: " + err.message);
+        }
+    });
+}
 
-        // รายจ่าย: E-H
-        "Date_Expense": formData.get("expense_date_1") || "",
-        "Detail_Expense": formData.get("expense_description_1") || "",
-        "Amount": formData.get("expense_amount_1") || "",
-        "Necessary/Discretionary expense": formData.get("expense_type_1") || "",
-
-        // Subscription: I-K
-        "Date_Subscription": "", // ไม่มี input วัน ต้องเพิ่มในฟอร์มหากต้องการ
-        "Monthly Subscription Fee Detail": formData.get("subscription_name_1") || "",
-        "Amount per Month": formData.get("subscription_cost_1") || "",
-
-        // หนี้: L-O
-        "Liabilities Detail": formData.get("debt_name_1") || "",
-        "Outstanding Balance": formData.get("debt_amount_1") || "",
-        "APR": formData.get("debt_interest_rate_1") || "",
-        "Payment Due Date": formData.get("debt_due_date_1") || "",
-
-        // ภาษี: P–T
-        "Annual Assessable Income": formData.get("annual_income_type") || "",
-        "Spouse Allowance": formData.get("deductible_spouse") || "",
-        "Life Insurance Premium": formData.get("deductible_insurance") || "",
-        "Investment Allowance": formData.get("deductible_investment") || "",
-        "Donation Allowance": formData.get("deductible_donation") || ""
-    };
-
-    try {
-        const res = await fetch(N8N_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(dataToSend)
-        });
-
-        formResponseMessage.textContent = '✅ ส่งข้อมูลสำเร็จแล้ว!';
-        formResponseMessage.style.color = 'green';
-        finsageDataForm.reset();
-
-        document.getElementById('incomeList').innerHTML = '';
-        document.getElementById('expenseList').innerHTML = '';
-        document.getElementById('subscriptionList').innerHTML = '';
-        document.getElementById('debtList').innerHTML = '';
-    } catch (err) {
-        formResponseMessage.textContent = '❌ ส่งข้อมูลล้มเหลว: ' + err.message;
-        formResponseMessage.style.color = 'red';
-    }
+window.addEventListener('load', function () {
+    addIncome();
+    addExpense();
 });
-
 </script>
 
 </body>
