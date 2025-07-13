@@ -642,21 +642,28 @@ const response = await fetch(N8N_WEBHOOK_URL, {
   },
   body: JSON.stringify(data)
 });
+const response = await fetch(N8N_WEBHOOK_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(dataToSend)
+});
 
-            if (response.ok) {
-                const result = await response.json();
-                formResponseMessage.textContent = 'ส่งข้อมูลสำเร็จแล้ว! ✨ ข้อมูลจะปรากฏใน Google Sheet สักครู่';
-                formResponseMessage.style.color = 'green';
-                formResponseMessage.style.backgroundColor = '#e8f5e9';
-                finsageDataForm.reset();
-                console.log('ส่งข้อมูลสำเร็จ:', result);
-            } else {
-                const errorDetails = await response.text();
-                formResponseMessage.textContent = 'เกิดข้อผิดพลาดในการส่งข้อมูล: ' + response.status + ' - ' + String(errorDetails);
-                formResponseMessage.style.color = 'red';
-                formResponseMessage.style.backgroundColor = '#ffebee';
-                console.error('เกิดข้อผิดพลาดในการตอบกลับจาก Webhook:', response.status, errorDetails);
-            }
+// 🔥 ใส่ต่อจากตรงนี้!
+if (response.ok) {
+    const result = await response.json();
+    formResponseMessage.textContent = 'ส่งข้อมูลสำเร็จแล้ว! ✨ ข้อมูลจะปรากฏในระบบเร็ว ๆ นี้';
+    formResponseMessage.style.color = 'green';
+    formResponseMessage.style.backgroundColor = '#e8f5e9';
+    finsageDataForm.reset();
+    console.log('ส่งข้อมูลสำเร็จ:', result);
+} else {
+    const errorDetails = await response.text();
+    formResponseMessage.textContent = 'เกิดข้อผิดพลาดในการส่งข้อมูล: ' + response.status + ' - ' + String(errorDetails);
+    formResponseMessage.style.color = 'red';
+    formResponseMessage.style.backgroundColor = '#ffebee';
+    console.error('เกิดข้อผิดพลาดในการตอบกลับจาก Webhook:', response.status, errorDetails);
+}
+
         } catch (error) {
             formResponseMessage.textContent = 'ไม่สามารถเชื่อมต่อได้: ' + error.message;
             formResponseMessage.style.color = 'red';
