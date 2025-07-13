@@ -470,259 +470,217 @@ function addExpense() {
         </div>
     `;
    <script>
+<script>
 let incomeCounter = 0;
 let expenseCounter = 0;
 let subscriptionCounter = 0;
 let debtCounter = 0;
 
-// เพิ่มรายรับ
-function addIncome() {
-    incomeCounter++;
-    const incomeList = document.getElementById('incomeList');
-    const incomeItem = document.createElement('div');
-    incomeItem.className = 'dynamic-item';
-    incomeItem.innerHTML = `
-        <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
-        <div class="form-row-3">
-            <div class="form-group">
-                <label>วันที่</label>
-                <input type="date" name="income_date_${incomeCounter}" required>
-            </div>
-            <div class="form-group">
-                <label>รายละเอียด</label>
-                <input type="text" name="income_description_${incomeCounter}" placeholder="เช่น เงินเดือน, โบนัส" required>
-            </div>
-            <div class="form-group">
-                <label>จำนวนเงิน (บาท)</label>
-                <input type="number" name="income_amount_${incomeCounter}" min="0" step="0.01" required>
-            </div>
-        </div>
-    `;
-    incomeList.appendChild(incomeItem);
-}
-
-// เพิ่มรายจ่าย
-function addExpense() {
-    expenseCounter++;
-    const expenseList = document.getElementById('expenseList');
-    const expenseItem = document.createElement('div');
-    expenseItem.className = 'dynamic-item';
-    expenseItem.innerHTML = `
-        <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
-        <div class="form-row-3">
-            <div class="form-group">
-                <label>วันที่</label>
-                <input type="date" name="expense_date_${expenseCounter}" required>
-            </div>
-            <div class="form-group">
-                <label>รายละเอียด</label>
-                <input type="text" name="expense_description_${expenseCounter}" placeholder="เช่น ค่าอาหาร, ค่าน้ำมัน" required>
-            </div>
-            <div class="form-group">
-                <label>จำนวนเงิน (บาท)</label>
-                <input type="number" name="expense_amount_${expenseCounter}" min="0" step="0.01" required>
-            </div>
-        </div>
-        <div class="form-group">
-            <label>ประเภทรายจ่าย</label>
-            <select name="expense_type_${expenseCounter}" required>
-                <option value="">เลือกประเภท</option>
-                <option value="รายจ่ายจำเป็น">รายจ่ายจำเป็น</option>
-                <option value="รายจ่ายฟุ่มเฟือย">รายจ่ายฟุ่มเฟือย</option>
-            </select>
-        </div>
-    `;
-    expenseList.appendChild(expenseItem);
-}
-
-// เพิ่มค่าบริการรายเดือน
-function addSubscription() {
-    subscriptionCounter++;
-    const list = document.getElementById('subscriptionList');
-    const item = document.createElement('div');
-    item.className = 'dynamic-item';
-    item.innerHTML = `
-        <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
-        <div class="form-row">
-            <div class="form-group">
-                <label>ชื่อบริการ</label>
-                <input type="text" name="subscription_name_${subscriptionCounter}" required>
-            </div>
-            <div class="form-group">
-                <label>ค่าบริการต่อเดือน (บาท)</label>
-                <input type="number" name="subscription_cost_${subscriptionCounter}" min="0" step="0.01" required>
-            </div>
-        </div>
-    `;
-    list.appendChild(item);
-}
-
-// เพิ่มหนี้
-function addDebt() {
-    debtCounter++;
-    const list = document.getElementById('debtList');
-    const item = document.createElement('div');
-    item.className = 'dynamic-item';
-    item.innerHTML = `
-        <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
-        <div class="form-row">
-            <div class="form-group">
-                <label>ชื่อหนี้</label>
-                <input type="text" name="debt_name_${debtCounter}" required>
-            </div>
-            <div class="form-group">
-                <label>ยอดหนี้คงเหลือ (บาท)</label>
-                <input type="number" name="debt_amount_${debtCounter}" min="0" step="0.01" required>
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>อัตราดอกเบี้ยต่อปี (%)</label>
-                <input type="number" name="debt_interest_rate_${debtCounter}" min="0" max="100" step="0.01" required>
-            </div>
-            <div class="form-group">
-                <label>วันครบรอบจ่าย</label>
-                <input type="date" name="debt_due_date_${debtCounter}" required>
-            </div>
-        </div>
-    `;
-    list.appendChild(item);
-}
-
-// ลบรายการ
 function removeItem(button) {
-    button.parentElement.remove();
+  button.parentElement.remove();
 }
 
-// Webhook n8n
+function addDynamicItem(counter, containerId, template) {
+  counter++;
+  const container = document.getElementById(containerId);
+  const div = document.createElement('div');
+  div.className = 'dynamic-item';
+  div.innerHTML = template(counter);
+  container.appendChild(div);
+  return counter;
+}
+
+function addIncome() {
+  incomeCounter = addDynamicItem(incomeCounter, 'incomeList', i => `
+    <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
+    <div class="form-row-3">
+      <div class="form-group">
+        <label for="income_date_${i}">วันที่</label>
+        <input type="date" name="income_date_${i}" required>
+      </div>
+      <div class="form-group">
+        <label for="income_description_${i}">รายละเอียด</label>
+        <input type="text" name="income_description_${i}" required>
+      </div>
+      <div class="form-group">
+        <label for="income_amount_${i}">จำนวนเงิน</label>
+        <input type="number" name="income_amount_${i}" step="0.01" required>
+      </div>
+    </div>
+  `);
+}
+
+function addExpense() {
+  expenseCounter = addDynamicItem(expenseCounter, 'expenseList', i => `
+    <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
+    <div class="form-row-3">
+      <div class="form-group">
+        <label for="expense_date_${i}">วันที่</label>
+        <input type="date" name="expense_date_${i}" required>
+      </div>
+      <div class="form-group">
+        <label for="expense_description_${i}">รายละเอียด</label>
+        <input type="text" name="expense_description_${i}" required>
+      </div>
+      <div class="form-group">
+        <label for="expense_amount_${i}">จำนวนเงิน</label>
+        <input type="number" name="expense_amount_${i}" step="0.01" required>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="expense_type_${i}">ประเภท</label>
+      <select name="expense_type_${i}" required>
+        <option value="">เลือก</option>
+        <option value="รายจ่ายจำเป็น">รายจ่ายจำเป็น</option>
+        <option value="รายจ่ายฟุ่มเฟือย">รายจ่ายฟุ่มเฟือย</option>
+      </select>
+    </div>
+  `);
+}
+<script>
+function addSubscription() {
+  subscriptionCounter = addDynamicItem(subscriptionCounter, 'subscriptionList', i => `
+    <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="subscription_name_${i}">ชื่อบริการ</label>
+        <input type="text" name="subscription_name_${i}" required>
+      </div>
+      <div class="form-group">
+        <label for="subscription_cost_${i}">ค่าบริการต่อเดือน</label>
+        <input type="number" name="subscription_cost_${i}" step="0.01" required>
+      </div>
+    </div>
+  `);
+}
+
+function addDebt() {
+  debtCounter = addDynamicItem(debtCounter, 'debtList', i => `
+    <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="debt_name_${i}">ชื่อหนี้</label>
+        <input type="text" name="debt_name_${i}" required>
+      </div>
+      <div class="form-group">
+        <label for="debt_amount_${i}">ยอดคงเหลือ</label>
+        <input type="number" name="debt_amount_${i}" step="0.01" required>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="debt_interest_rate_${i}">ดอกเบี้ย %</label>
+        <input type="number" name="debt_interest_rate_${i}" step="0.01" required>
+      </div>
+      <div class="form-group">
+        <label for="debt_due_date_${i}">วันครบ</label>
+        <input type="date" name="debt_due_date_${i}" required>
+      </div>
+    </div>
+  `);
+}
+
+// ส่งข้อมูลไปที่ N8N Webhook
 const N8N_WEBHOOK_URL = 'https://www222.app.n8n.cloud/webhook-test/c68f863e-4785-4ab4-93d1-a4397ffed2e3';
 const finsageDataForm = document.getElementById('finsageDataForm');
 const formResponseMessage = document.getElementById('formResponseMessage');
 
 if (finsageDataForm) {
-    finsageDataForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+  finsageDataForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    formResponseMessage.textContent = '⏳ กำลังส่งข้อมูล...';
+    formResponseMessage.style.color = 'blue';
 
-        formResponseMessage.textContent = '⏳ กำลังส่งข้อมูล...';
-        formResponseMessage.style.color = 'blue';
+    try {
+      const formData = new FormData(finsageDataForm);
+      const dataToSend = {
+        telegram_id: formData.get('telegram_id') || '',
+        annual_income_type: formData.get('annual_income_type') || '',
+        deductible_personal: parseFloat(formData.get('deductible_personal')) || 0,
+        deductible_spouse: parseFloat(formData.get('deductible_spouse')) || 0,
+        deductible_child: parseFloat(formData.get('deductible_child')) || 0,
+        deductible_insurance: parseFloat(formData.get('deductible_insurance')) || 0,
+        deductible_investment: parseFloat(formData.get('deductible_investment')) || 0,
+        deductible_donation: parseFloat(formData.get('deductible_donation')) || 0,
+        incomes: [],
+        expenses: [],
+        subscriptions: [],
+        debts: [],
+      };
 
-        try {
-            const formData = new FormData(finsageDataForm);
-
-            // ข้อมูลส่วนตัวและค่าลดหย่อนภาษี
-            const dataToSend = {
-                telegram_id: formData.get('telegram_id') || '',
-                annual_income_type: formData.get('annual_income_type') || '',
-                deductible_personal: parseFloat(formData.get('deductible_personal')) || 0,
-                deductible_spouse: parseFloat(formData.get('deductible_spouse')) || 0,
-                deductible_child: parseFloat(formData.get('deductible_child')) || 0,
-                deductible_insurance: parseFloat(formData.get('deductible_insurance')) || 0,
-                deductible_investment: parseFloat(formData.get('deductible_investment')) || 0,
-                deductible_donation: parseFloat(formData.get('deductible_donation')) || 0,
-            };
-
-            // ดึงข้อมูลรายรับหลายรายการ
-            dataToSend.incomes = [];
-            for (let i = 1; i <= incomeCounter; i++) {
-                const date = formData.get(`income_date_${i}`);
-                const detail = formData.get(`income_description_${i}`);
-                const amount = parseFloat(formData.get(`income_amount_${i}`));
-                if (date && detail && !isNaN(amount)) {
-                    dataToSend.incomes.push({
-                        date,
-                        detail,
-                        amount
-                    });
-                }
-            }
-
-            // ดึงข้อมูลรายจ่ายหลายรายการ
-            dataToSend.expenses = [];
-            for (let i = 1; i <= expenseCounter; i++) {
-                const date = formData.get(`expense_date_${i}`);
-                const detail = formData.get(`expense_description_${i}`);
-                const amount = parseFloat(formData.get(`expense_amount_${i}`));
-                const type = formData.get(`expense_type_${i}`);
-                if (date && detail && !isNaN(amount) && type) {
-                    dataToSend.expenses.push({
-                        date,
-                        detail,
-                        amount,
-                        type
-                    });
-                }
-            }
-
-            // ดึงข้อมูลค่าบริการรายเดือนหลายรายการ
-            dataToSend.subscriptions = [];
-            for (let i = 1; i <= subscriptionCounter; i++) {
-                const name = formData.get(`subscription_name_${i}`);
-                const cost = parseFloat(formData.get(`subscription_cost_${i}`));
-                if (name && !isNaN(cost)) {
-                    dataToSend.subscriptions.push({
-                        name,
-                        cost
-                    });
-                }
-            }
-
-            // ดึงข้อมูลหนี้สินหลายรายการ
-            dataToSend.debts = [];
-            for (let i = 1; i <= debtCounter; i++) {
-                const name = formData.get(`debt_name_${i}`);
-                const amount = parseFloat(formData.get(`debt_amount_${i}`));
-                const apr = parseFloat(formData.get(`debt_interest_rate_${i}`));
-                const dueDate = formData.get(`debt_due_date_${i}`);
-                if (name && !isNaN(amount) && !isNaN(apr) && dueDate) {
-                    dataToSend.debts.push({
-                        name,
-                        amount,
-                        apr,
-                        dueDate
-                    });
-                }
-            }
-
-            // ส่งข้อมูล JSON ไป n8n webhook
-            const res = await fetch(N8N_WEBHOOK_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dataToSend)
-            });
-
-            if (res.ok) {
-                formResponseMessage.textContent = '✅ ส่งข้อมูลสำเร็จแล้ว!';
-                formResponseMessage.style.color = 'green';
-
-                finsageDataForm.reset();
-                document.getElementById('incomeList').innerHTML = '';
-                document.getElementById('expenseList').innerHTML = '';
-                document.getElementById('subscriptionList').innerHTML = '';
-                document.getElementById('debtList').innerHTML = '';
-
-                incomeCounter = 0;
-                expenseCounter = 0;
-                subscriptionCounter = 0;
-                debtCounter = 0;
-
-                addIncome();
-                addExpense();
-            } else {
-                throw new Error(`HTTP error! Status: ${res.status}`);
-            }
-        } catch (err) {
-            formResponseMessage.textContent = '❌ ส่งข้อมูลล้มเหลว: ' + err.message;
-            formResponseMessage.style.color = 'red';
+      for (let i = 1; i <= incomeCounter; i++) {
+        const date = formData.get(`income_date_${i}`);
+        const detail = formData.get(`income_description_${i}`);
+        const amount = parseFloat(formData.get(`income_amount_${i}`));
+        if (date && detail && !isNaN(amount)) {
+          dataToSend.incomes.push({ date, detail, amount });
         }
-    });
+      }
+
+      for (let i = 1; i <= expenseCounter; i++) {
+        const date = formData.get(`expense_date_${i}`);
+        const detail = formData.get(`expense_description_${i}`);
+        const amount = parseFloat(formData.get(`expense_amount_${i}`));
+        const type = formData.get(`expense_type_${i}`);
+        if (date && detail && !isNaN(amount) && type) {
+          dataToSend.expenses.push({ date, detail, amount, type });
+        }
+      }
+
+      for (let i = 1; i <= subscriptionCounter; i++) {
+        const name = formData.get(`subscription_name_${i}`);
+        const cost = parseFloat(formData.get(`subscription_cost_${i}`));
+        if (name && !isNaN(cost)) {
+          dataToSend.subscriptions.push({ name, cost });
+        }
+      }
+
+      for (let i = 1; i <= debtCounter; i++) {
+        const name = formData.get(`debt_name_${i}`);
+        const amount = parseFloat(formData.get(`debt_amount_${i}`));
+        const apr = parseFloat(formData.get(`debt_interest_rate_${i}`));
+        const dueDate = formData.get(`debt_due_date_${i}`);
+        if (name && !isNaN(amount) && !isNaN(apr) && dueDate) {
+          dataToSend.debts.push({ name, amount, apr, dueDate });
+        }
+      }
+
+      const res = await fetch(N8N_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataToSend)
+      });
+
+      if (res.ok) {
+        formResponseMessage.textContent = '✅ ส่งข้อมูลสำเร็จแล้ว!';
+        formResponseMessage.style.color = 'green';
+        finsageDataForm.reset();
+        document.getElementById('incomeList').innerHTML = '';
+        document.getElementById('expenseList').innerHTML = '';
+        document.getElementById('subscriptionList').innerHTML = '';
+        document.getElementById('debtList').innerHTML = '';
+        incomeCounter = 0;
+        expenseCounter = 0;
+        subscriptionCounter = 0;
+        debtCounter = 0;
+        addIncome();
+        addExpense();
+      } else {
+        throw new Error(`ส่งข้อมูลไม่สำเร็จ (${res.status})`);
+      }
+    } catch (err) {
+      formResponseMessage.textContent = '❌ ล้มเหลว: ' + err.message;
+      formResponseMessage.style.color = 'red';
+    }
+  });
 }
 
-// โหลดรายการเริ่มต้น
-window.addEventListener('load', function () {
-    addIncome();
-    addExpense();
+window.addEventListener('load', () => {
+  addIncome();
+  addExpense();
 });
 </script>
+
 </body>
 
 </html>
