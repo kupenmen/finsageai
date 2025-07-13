@@ -633,47 +633,56 @@ if (finsageDataForm) {
         formResponseMessage.style.backgroundColor = '#e0f7fa';
 
         try {
+// ✅ ไม่ต้องประกาศซ้ำ
 const N8N_WEBHOOK_URL = 'https://www222.app.n8n.cloud/webhook/c68f863e-4785-4ab4-93d1-a4397ffed2e3';
 
-const response = await fetch(N8N_WEBHOOK_URL, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify(data)
-});
-const response = await fetch(N8N_WEBHOOK_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(dataToSend)
-});
+const finsageDataForm = document.getElementById('finsageDataForm');
+const formResponseMessage = document.getElementById('formResponseMessage');
 
-// 🔥 ใส่ต่อจากตรงนี้!
-if (response.ok) {
-    const result = await response.json();
-    formResponseMessage.textContent = 'ส่งข้อมูลสำเร็จแล้ว! ✨ ข้อมูลจะปรากฏในระบบเร็ว ๆ นี้';
-    formResponseMessage.style.color = 'green';
-    formResponseMessage.style.backgroundColor = '#e8f5e9';
-    finsageDataForm.reset();
-    console.log('ส่งข้อมูลสำเร็จ:', result);
-} else {
-    const errorDetails = await response.text();
-    formResponseMessage.textContent = 'เกิดข้อผิดพลาดในการส่งข้อมูล: ' + response.status + ' - ' + String(errorDetails);
-    formResponseMessage.style.color = 'red';
-    formResponseMessage.style.backgroundColor = '#ffebee';
-    console.error('เกิดข้อผิดพลาดในการตอบกลับจาก Webhook:', response.status, errorDetails);
-}
+if (finsageDataForm) {
+    finsageDataForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(finsageDataForm);
+        const dataToSend = {};
+        for (const [key, value] of formData.entries()) {
+            dataToSend[key] = value;
+        }
+
+        formResponseMessage.textContent = 'กำลังส่งข้อมูล... โปรดรอสักครู่';
+        formResponseMessage.style.color = 'blue';
+        formResponseMessage.style.backgroundColor = '#e0f7fa';
+
+        try {
+            const response = await fetch(N8N_WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dataToSend)
+            });
+
+            if (response.ok) {
+                formResponseMessage.textContent = '✅ ส่งข้อมูลสำเร็จ! ระบบจะวิเคราะห์และส่งผลลัพธ์ทาง Telegram';
+                formResponseMessage.style.color = 'green';
+                formResponseMessage.style.backgroundColor = '#e8f5e9';
+                finsageDataForm.reset();
+                console.log('📨 ส่งข้อมูลไปยัง n8n สำเร็จ');
+            } else {
+                const errorDetails = await response.text();
+                formResponseMessage.textContent = '❌ เกิดข้อผิดพลาด: ' + response.status + ' - ' + errorDetails;
+                formResponseMessage.style.color = 'red';
+                formResponseMessage.style.backgroundColor = '#ffebee';
+            }
 
         } catch (error) {
-            formResponseMessage.textContent = 'ไม่สามารถเชื่อมต่อได้: ' + error.message;
+            formResponseMessage.textContent = '❌ ไม่สามารถเชื่อมต่อได้: ' + error.message;
             formResponseMessage.style.color = 'red';
             formResponseMessage.style.backgroundColor = '#ffebee';
-            console.error('ข้อผิดพลาดเครือข่าย:', error);
         }
     });
 } else {
-    console.error('ไม่พบฟอร์ม HTML ที่มี id="finsageDataForm" กรุณาตรวจสอบ!');
+    console.error('❗ ไม่พบฟอร์ม id="finsageDataForm"');
 }
+
 // ====================================================================
 // * สิ้นสุดโค้ด JavaScript สำหรับ Webhook *
 // ====================================================================
