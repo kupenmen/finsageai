@@ -399,9 +399,38 @@ function addIncome() {
             </div>
         </div>
     `;
+   let incomeCounter = 0;
+let expenseCounter = 0;
+let subscriptionCounter = 0;
+let debtCounter = 0;
+
+// เพิ่มรายรับ
+function addIncome() {
+    incomeCounter++;
+    const incomeList = document.getElementById('incomeList');
+    const incomeItem = document.createElement('div');
+    incomeItem.className = 'dynamic-item';
+    incomeItem.innerHTML = `
+        <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
+        <div class="form-row-3">
+            <div class="form-group">
+                <label>วันที่ (Date)</label>
+                <input type="date" name="Date_${incomeCounter}" required>
+            </div>
+            <div class="form-group">
+                <label>รายละเอียด (Detail)</label>
+                <input type="text" name="Detail_${incomeCounter}" placeholder="เช่น เงินเดือน, โบนัส" required>
+            </div>
+            <div class="form-group">
+                <label>รายรับ (Income)</label>
+                <input type="number" name="Income_${incomeCounter}" min="0" step="0.01" required>
+            </div>
+        </div>
+    `;
     incomeList.appendChild(incomeItem);
 }
 
+// เพิ่มรายจ่าย
 function addExpense() {
     expenseCounter++;
     const expenseList = document.getElementById('expenseList');
@@ -411,85 +440,140 @@ function addExpense() {
         <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
         <div class="form-row-3">
             <div class="form-group">
-                <label>วันที่</label>
+                <label>วันที่ (Date)</label>
                 <input type="date" name="Date_Expense_${expenseCounter}" required>
             </div>
             <div class="form-group">
-                <label>รายละเอียด</label>
+                <label>รายละเอียด (Detail)</label>
                 <input type="text" name="Detail_Expense_${expenseCounter}" placeholder="เช่น ค่าอาหาร, ค่าน้ำมัน" required>
             </div>
             <div class="form-group">
-                <label>จำนวนเงิน (บาท)</label>
-                <input type="number" name="Amount_${expenseCounter}" step="0.01" required>
+                <label>จำนวนเงิน (Amount)</label>
+                <input type="number" name="Amount_${expenseCounter}" min="0" step="0.01" required>
             </div>
         </div>
         <div class="form-group">
-            <label>ประเภท</label>
+            <label>ประเภท (Necessary/Discretionary expense)</label>
             <select name="Necwssary_Discretionary_${expenseCounter}" required>
                 <option value="">เลือกประเภท</option>
-                <option value="Necessary">Necessary</option>
-                <option value="Discretionary">Discretionary</option>
+                <option value="Necessary">จำเป็น (Necessary)</option>
+                <option value="Discretionary">ฟุ่มเฟือย (Discretionary)</option>
             </select>
         </div>
     `;
     expenseList.appendChild(expenseItem);
 }
 
+// เพิ่มค่าบริการรายเดือน (Monthly Subscription Fee Detail & Amount per Month)
 function addSubscription() {
     subscriptionCounter++;
     const subscriptionList = document.getElementById('subscriptionList');
-    const item = document.createElement('div');
-    item.className = 'dynamic-item';
-    item.innerHTML = `
+    const subscriptionItem = document.createElement('div');
+    subscriptionItem.className = 'dynamic-item';
+    subscriptionItem.innerHTML = `
         <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
-        <div class="form-row">
+        <div class="form-row-2">
             <div class="form-group">
-                <label>รายละเอียดบริการรายเดือน</label>
+                <label>ค่าบริการรายเดือน (Monthly Subscription Fee Detail)</label>
                 <input type="text" name="Monthly_Subscription_Fee_Detail_${subscriptionCounter}" required>
             </div>
             <div class="form-group">
-                <label>จำนวนเงินต่อเดือน (บาท)</label>
-                <input type="number" name="Amount_per_Month_${subscriptionCounter}" step="0.01" required>
+                <label>จำนวนเงินต่อเดือน (Amount per Month)</label>
+                <input type="number" name="Amount_per_Month_${subscriptionCounter}" min="0" step="0.01" required>
             </div>
         </div>
     `;
-    subscriptionList.appendChild(item);
+    subscriptionList.appendChild(subscriptionItem);
 }
 
+// เพิ่มข้อมูลหนี้สิน (Liablities Detail, Outhstanding Balance, APR, Payment Due Date)
 function addDebt() {
     debtCounter++;
     const debtList = document.getElementById('debtList');
-    const item = document.createElement('div');
-    item.className = 'dynamic-item';
-    item.innerHTML = `
+    const debtItem = document.createElement('div');
+    debtItem.className = 'dynamic-item';
+    debtItem.innerHTML = `
         <button type="button" class="remove-btn" onclick="removeItem(this)">×</button>
-        <div class="form-row">
+        <div class="form-row-2">
             <div class="form-group">
-                <label>รายละเอียดหนี้สิน</label>
+                <label>รายละเอียดหนี้สิน (Liablities Detail)</label>
                 <input type="text" name="Liablities_Detail_${debtCounter}" required>
             </div>
             <div class="form-group">
-                <label>ยอดหนี้คงเหลือ</label>
-                <input type="number" name="Outhstanding_Balance_${debtCounter}" step="0.01" required>
+                <label>ยอดหนี้คงเหลือ (Outhstanding Balance)</label>
+                <input type="number" name="Outhstanding_Balance_${debtCounter}" min="0" step="0.01" required>
             </div>
         </div>
-        <div class="form-row">
+        <div class="form-row-2">
             <div class="form-group">
                 <label>APR (%)</label>
-                <input type="number" name="APR_${debtCounter}" step="0.01" required>
+                <input type="number" name="APR_${debtCounter}" min="0" max="100" step="0.01" required>
             </div>
             <div class="form-group">
-                <label>วันครบกำหนดชำระ</label>
+                <label>วันครบกำหนดชำระ (Payment Due Date)</label>
                 <input type="date" name="Payment_Due_Date_${debtCounter}" required>
             </div>
         </div>
     `;
-    debtList.appendChild(item);
+    debtList.appendChild(debtItem);
 }
 
+// ลบรายการ (ใช้กับทุกส่วน)
 function removeItem(button) {
     button.parentElement.remove();
 }
+
+// Webhook URL ที่จะส่งข้อมูล
+const N8N_WEBHOOK_URL = 'https://www222.app.n8n.cloud/webhook/c68f863e-4785-4ab4-93d1-a4397ffed2e3';
+
+const finsageDataForm = document.getElementById('finsageDataForm');
+
+if (finsageDataForm) {
+    finsageDataForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // เริ่มเก็บข้อมูล form
+        const formData = new FormData(finsageDataForm);
+        const dataToSend = {};
+
+        // เพิ่ม Telegram ID และข้อมูลภาษี ที่อยู่นอก dynamic list
+        dataToSend.telegram_id = formData.get('telegram_id');
+        dataToSend.annual_income_type = formData.get('annual_income_type');
+        dataToSend.deductible_personal = formData.get('deductible_personal');
+        dataToSend.deductible_spouse = formData.get('deductible_spouse');
+        dataToSend.deductible_child = formData.get('deductible_child');
+        dataToSend.deductible_insurance = formData.get('deductible_insurance');
+        dataToSend.deductible_investment = formData.get('deductible_investment');
+        dataToSend.deductible_donation = formData.get('deductible_donation');
+
+        // เก็บข้อมูล dynamic list รายรับ
+        for(let i = 1; i <= incomeCounter; i++) {
+            dataToSend[`Date_${i}`] = formData.get(`Date_${i}`) || '';
+            dataToSend[`Detail_${i}`] = formData.get(`Detail_${i}`) || '';
+            dataToSend[`Income_${i}`] = formData.get(`Income_${i}`) || '';
+        }
+
+        // เก็บข้อมูล dynamic list รายจ่าย
+        for(let i = 1; i <= expenseCounter; i++) {
+            dataToSend[`Date_Expense_${i}`] = formData.get(`Date_Expense_${i}`) || '';
+            dataToSend[`Detail_Expense_${i}`] = formData.get(`Detail_Expense_${i}`) || '';
+            dataToSend[`Amount_${i}`] = formData.get(`Amount_${i}`) || '';
+            dataToSend[`Necwssary_Discretionary_${i}`] = formData.get(`Necwssary_Discretionary_${i}`) || '';
+        }
+
+        // เก็บข้อมูล dynamic list ค่าบริการรายเดือน
+        for(let i = 1; i <= subscriptionCounter; i++) {
+            dataToSend[`Monthly_Subscription_Fee_Detail_${i}`] = formData.get(`Monthly_Subscription_Fee_Detail_${i}`) || '';
+            dataToSend[`Amount_per_Month_${i}`] = formData.get(`Amount_per_Month_${i}`) || '';
+        }
+
+        // เก็บข้อมูล dynamic list หนี้สิน
+        for(let i = 1; i <= debtCounter; i++) {
+            dataToSend[`Liablities_Detail_${i}`] = formData.get(`Liablities_Detail_${i}`) || '';
+            dataToSend[`Outhstanding_Balance_${i}`] = formData.get(`Outhstanding_Balance_${i}`) || '';
+            dataToSend[`APR_${i}`] = formData.get(`APR_${i}`) || '';
+            dataToSend[`Payment_Due_Date
+
 
 const N8N_WEBHOOK_URL = 'https://www222.app.n8n.cloud/webhook-test/c68f863e-4785-4ab4-93d1-a4397ffed2e3';
 const finsageDataForm = document.getElementById('finsageDataForm');
